@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -eu
+cd "$(pwd -P)"
+
+cmd="go test -integration-tests -linkerd $(which linkerd)"
+
+for arg in "$@"
+do
+    cmd="$cmd $arg"
+done
+
+$cmd
+
+
