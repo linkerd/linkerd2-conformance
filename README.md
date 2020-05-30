@@ -6,13 +6,13 @@ The conformance validation tool is primarily intended to be run against an insta
 
 The conformance tests exercise the following features:
 
-- [] Validation of your LInkerd2 control plane
-- [] Automatic proxy injection on workloads
-- [] Functioning of  `linkerd tap`, `stat`, `routes` and `edges` commands
-- [] Verifying the functioning of the `tap` extension API server
-- [] Retries and timeouts
-- [] Data plane health checks
-- [] Ingress configuration
+- [ ] Validation of your LInkerd2 control plane
+- [ ] Automatic proxy injection on workloads
+- [ ] Functioning of  `linkerd tap`, `stat`, `routes` and `edges` commands
+- [ ] Verifying the functioning of the `tap` extension API server
+- [ ] Retries and timeouts
+- [ ] Data plane health checks
+- [ ] Ingress configuration
 
 _...and a lot more to come_
 
@@ -95,7 +95,7 @@ $ bin/go-test \
   -uninstall
 ```
 
-Additionally, as this project uses [Ginkgo](https://github.com/onsi/ginkgo) for testins, you may also pass flags options from the [Ginkgo CLI](https://onsi.github.io/ginkgo/#the-ginkgo-cli).
+Additionally, as this project uses [Ginkgo](https://github.com/onsi/ginkgo) for the tests, you may also pass flags options from the [Ginkgo CLI](https://onsi.github.io/ginkgo/#the-ginkgo-cli).
 
 <!-- refs -->
 [logo]: https://user-images.githubusercontent.com/9226/33582867-3e646e02-d90c-11e7-85a2-2e238737e859.png
