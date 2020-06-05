@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/linkerd/linkerd2-conformance/specs/install"
+	"github.com/linkerd/linkerd2-conformance/specs/uninstall"
 	"github.com/linkerd/linkerd2-conformance/utils"
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
-
-type runner func(*testing.T, string)
 
 func TestMain(m *testing.M) {
 	utils.InitTestHelper()
@@ -16,17 +17,13 @@ func TestMain(m *testing.M) {
 
 func TestConformance(t *testing.T) {
 
-	specs := []struct {
-		run  runner
-		desc string
-	}{
-		{
-			run:  install.RunInstallSpec,
-			desc: "control plane installation spec",
-		},
-	}
+	// A Describe block to hold the tests
+	_ = ginkgo.Describe("", func() {
+		// Bring tests into scope
+		_ = install.NewInstallSpec()
+		_ = uninstall.NewUninstallSpec()
+	})
 
-	for _, s := range specs {
-		s.run(t, s.desc)
-	}
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "linkerd2 conformance validation")
 }

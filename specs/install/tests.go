@@ -34,11 +34,11 @@ func testControlPlaneInstall(h *testutil.TestHelper) {
 	exec := append([]string{cmd}, args...)
 
 	ginkgo.By("attempting to issue `linkerd install` and gather the manifests")
-	out, stderr, _ := h.LinkerdRun(exec...)
+	out, stderr, err := h.LinkerdRun(exec...)
 	gomega.Expect(stderr).To(gomega.Equal(""))
 
 	ginkgo.By("attempting to apply manifests to your cluster")
-	out, err := h.KubectlApply(out, "")
+	out, err = h.KubectlApply(out, "")
 
 	gomega.Expect(err).To(gomega.BeNil())
 }
