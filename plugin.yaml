@@ -14,15 +14,12 @@ podSpec:
 sonobuoy-config:
   driver: Job
   plugin-name: linkerd2-conformance
-  result-format: raw
+  result-format: junit
 spec:
   command:
   - /bin/bash
   args:
-      - -c 
-      - ./conformance -integration-tests -linkerd /root/.linkerd2/bin/linkerd -ginkgo.v -linkerd-namespace l5d-conformance --ginkgo.reportFile=/tmp/results/report.out.xml;
-        tar czvf /tmp/results/results.tar.gz -C /tmp/results .;
-        echo -n /tmp/results/results.tar.gz > /tmp/results/done
+      - ./run.sh
   image: mayankshah1607/linkerd2-conformance
   name: plugin
   resources: {}

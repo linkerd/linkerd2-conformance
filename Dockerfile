@@ -8,6 +8,10 @@ RUN go test -c -o conformance
 
 FROM debian:bullseye
 
+RUN apt update && \ 
+    apt upgrade -y && \
+    apt install curl -y
+
 # install kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
@@ -16,6 +20,10 @@ RUN mv ./kubectl /usr/local/bin
 # Copy test binary
 COPY --from=build /conformance/conformance /conformance
 
+# Copy run script
 
-CMD ["bash", "-c","/conformance"]
+COPY ./testdata .
+COPY ./run.sh .
+
+CMD ["/bin/bash", "run.sh"]
 

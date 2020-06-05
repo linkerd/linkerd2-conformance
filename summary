@@ -1,0 +1,133 @@
+Running Suite: linkerd2 conformance validation
+==============================================
+Random Seed: [1m1591354188[0m
+Will run [1m4[0m of [1m4[0m specs
+
+[0m[0m [90m`linkerd check`[0m [0mWith --pre: true[0m 
+  [1mshould successfully pass all checks[0m
+  [37m/conformance/specs/check/spec.go:15[0m
+[1mSTEP[0m: running check command
+[1mSTEP[0m: validating `check` output
+
+[36m[1mS [SKIPPING] [5.893 seconds][0m
+
+[90m/conformance/conformance_test.go:22[0m
+  `linkerd check`
+  [90m/conformance/specs/check/spec.go:12[0m
+    With --pre: true
+    [90m/conformance/specs/check/spec.go:13[0m
+      [36m[1mshould successfully pass all checks [It][0m
+      [90m/conformance/specs/check/spec.go:15[0m
+
+      [36mMismatch in output from `check`
+      open testdata/check.pre.golden: no such file or directory[0m
+
+      /conformance/specs/check/test.go:36
+[90m------------------------------[0m
+[0m[0m [90m`linkerd install`[0m 
+  [1mshould successfully install a Linkerd control plane[0m
+  [37m/conformance/specs/install/spec.go:20[0m
+[1mSTEP[0m: verifying if Helm release is empty
+[1mSTEP[0m: attempting to issue `linkerd install` and gather the manifests
+[1mSTEP[0m: attempting to apply manifests to your cluster
+[1mSTEP[0m: checking if l5d-conformance namespace exists
+
+[91m[1m• Failure [204.101 seconds][0m
+
+[90m/conformance/conformance_test.go:22[0m
+  `linkerd install`
+  [90m/conformance/specs/install/spec.go:11[0m
+    [91m[1mshould successfully install a Linkerd control plane [It][0m
+    [90m/conformance/specs/install/spec.go:20[0m
+
+    [91mExpected
+        <*errors.errorString | 0xc000403590>: {
+            s: "Container [grafana] in pod [linkerd-grafana-85d898dbcb-r6ljz] in namespace [l5d-conformance] has restart count [1]",
+        }
+    to be nil[0m
+
+    /conformance/specs/install/tests.go:72
+[90m------------------------------[0m
+[0m[0m [90m`linkerd check`[0m [0mWith --pre: false[0m 
+  [1mshould successfully pass all checks[0m
+  [37m/conformance/specs/check/spec.go:15[0m
+[1mSTEP[0m: running check command
+[1mSTEP[0m: validating `check` output
+
+[36m[1mS [SKIPPING] [0.327 seconds][0m
+
+[90m/conformance/conformance_test.go:22[0m
+  `linkerd check`
+  [90m/conformance/specs/check/spec.go:12[0m
+    With --pre: false
+    [90m/conformance/specs/check/spec.go:13[0m
+      [36m[1mshould successfully pass all checks [It][0m
+      [90m/conformance/specs/check/spec.go:15[0m
+
+      [36mMismatch in output from `check`
+      open testdata/check.golden: no such file or directory[0m
+
+      /conformance/specs/check/test.go:36
+[90m------------------------------[0m
+[0m[0m [90muninstall process[0m 
+  [1mshould remove the installed control plane[0m
+  [37m/conformance/specs/uninstall/spec.go:12[0m
+[1mSTEP[0m: gathering control plane manigfests and piping to `kubectl delete`
+[1mSTEP[0m: attempting to delete resources to your cluster
+
+[91m[1m• Failure [23.891 seconds][0m
+
+[90m/conformance/conformance_test.go:22[0m
+  uninstall process
+  [90m/conformance/specs/uninstall/spec.go:10[0m
+    [91m[1mshould remove the installed control plane [It][0m
+    [90m/conformance/specs/uninstall/spec.go:12[0m
+
+    [91mExpected
+        <*exec.ExitError | 0xc000178020>: {
+            ProcessState: {
+                pid: 121,
+                status: 256,
+                rusage: {
+                    Utime: {Sec: 0, Usec: 377843},
+                    Stime: {Sec: 0, Usec: 114497},
+                    Maxrss: 39380,
+                    Ixrss: 0,
+                    Idrss: 0,
+                    Isrss: 0,
+                    Minflt: 4069,
+                    Majflt: 1,
+                    Nswap: 0,
+                    Inblock: 144,
+                    Oublock: 0,
+                    Msgsnd: 0,
+                    Msgrcv: 0,
+                    Nsignals: 0,
+                    Nvcsw: 2943,
+                    Nivcsw: 490,
+                },
+            },
+            Stderr: nil,
+        }
+    to be nil[0m
+
+    /conformance/specs/uninstall/tests.go:26
+[90m------------------------------[0m
+
+JUnit path was configured: /tmp/results/report
+
+JUnit report was created: /tmp/results/report
+
+
+[91m[1mSummarizing 2 Failures:[0m
+
+[91m[1m[Fail] [0m[90m [0m[0m`linkerd install` [0m[91m[1m[It] should successfully install a Linkerd control plane [0m
+[37m/conformance/specs/install/tests.go:72[0m
+
+[91m[1m[Fail] [0m[90m [0m[0muninstall process [0m[91m[1m[It] should remove the installed control plane [0m
+[37m/conformance/specs/uninstall/tests.go:26[0m
+
+[1m[91mRan 2 of 4 Specs in 234.214 seconds[0m
+[1m[91mFAIL![0m -- [32m[1m0 Passed[0m | [91m[1m2 Failed[0m | [33m[1m0 Pending[0m | [36m[1m2 Skipped[0m
+--- FAIL: TestConformance (234.22s)
+FAIL
