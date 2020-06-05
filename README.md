@@ -33,11 +33,13 @@ These commands assume that the user has the [Sonobuoy CLI](https://github.com/vm
 This repo provides a Sonobuoy plugin file that is intended to be plugged into the Sonobuoy CLI. Sonobuoy reads the plugin definition, and spins up a pod with the [linkerd2-conformance Docker image]().
 
 ```bash
-# Download the Sonobuoy plugin file
-$ curl -LJO https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/sonobuoy/plugin.yaml
-
 # Run the plugin
-$ sonobuoy run --plugin plugin.yaml --wait
+$ plugin=https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/sonobuoy/plugin.yaml
+
+$ sonobuoy run \
+  --plugin $plugin \
+  --plugin-env linkerd2-conformance.LINKERD2_VERSION=[VERSION]\
+  --wait
 
 # [Optional] Check the status of the pod
 $ sonobuoy status
@@ -46,16 +48,15 @@ $ sonobuoy status
 # This command downloads the tar ball containing the results
 $ results=$(sonobuoy retrieve)
 
-# [Optional] Inspect the results
-$ sonobuoy results $result
+# Inspect the results
+$ sonobuoy results $result --mode detailed | jq
 
 # Clean up your cluster
 $ sonobuoy delete --wait
 ```
 
-The command `sonobuoy retrieve` downloads a tar ball that contains the results from the tests. The path `/plugins/linkerd2-conformance/results/global/report.out.xml` contains the JUnit report of the tests
-
-The logs from the pod expose a detailed summary of the tests
+Additionally, the logs from the pod expose a detailed summary of the tests. To view them, run
+the following commands
 
 ```bash
 # Make a directory to store the results
