@@ -12,12 +12,6 @@ case $2 in
     "test")
         $cmd -t "$1"/linkerd2-conformance .
         ;;
-    "base")
-        $cmd -t "$1"/linkerd2-conformance-base -f sonobuoy/base.Dockerfile .
-        ;;
-    "sonobuoy")
-        $cmd -t "$1"/linkerd2-sonobuoy -f sonobuoy/sonobuoy.Dockerfile .
-        ;;
     *)
         echo "Invalid option for source: $2"
         exit 1 

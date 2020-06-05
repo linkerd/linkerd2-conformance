@@ -12,12 +12,6 @@ case $2 in
     "test")
         $cmd "$1"/linkerd2-conformance
         ;;
-    "base")
-        $cmd "$1"/linkerd2-conformance-base
-        ;;
-    "sonobuoy")
-        $cmd "$1"/linkerd2-sonobuoy
-        ;;
     *)
         echo "Invalid option for source: $2"
         exit 1 
