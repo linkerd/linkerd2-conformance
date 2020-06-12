@@ -1,6 +1,7 @@
 package check
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/linkerd/linkerd2/testutil"
@@ -8,20 +9,44 @@ import (
 	"github.com/onsi/gomega"
 )
 
+type CheckOutput struct {
+	Success    bool `json:"success"`
+	Categories []struct {
+		CategoryName string `json:"categoryName"`
+		Checks       []struct {
+			Result string `json:"result"`
+			Error  string `json:"error"`
+		}
+	}
+}
+
+func getFailedChecks(r *CheckOutput) string {
+	err := "The following errors were detected:\n"
+
+	for _, c := range r.Categories {
+		for _, check := range c.Checks {
+			if check.Result == "error" {
+				err = fmt.Sprintf("%s\n%s", err, check.Error)
+			}
+		}
+	}
+
+	return err
+}
+
 func testCheck(h *testutil.TestHelper, pre bool) {
-	var golden string
+	var checkResult *CheckOutput
 
 	cmd := []string{
 		"check",
-		"--expected-version",
-		h.GetVersion(),
+		// "--expected-version",
+		// h.GetVersion(),
+		"-o",
+		"json",
 	}
 
 	if pre {
 		cmd = append(cmd, "--pre")
-		golden = "check.pre.golden"
-	} else {
-		golden = "check.golden"
 	}
 
 	ginkgo.By("running check command")
@@ -29,10 +54,8 @@ func testCheck(h *testutil.TestHelper, pre bool) {
 	gomega.Expect(stderr).To(gomega.Equal(""))
 
 	ginkgo.By("validating `check` output")
-	err = h.ValidateOutput(out, golden)
-	if err != nil {
-		// the mismatch in golden and out may happen has different releases of linkerd2 have
-		// may have introduced different set of checks. Hence, make this a soft requirement.
-		ginkgo.Skip(fmt.Sprintf("Mismatch in output from `check`\n%s", err.Error()))
-	}
+	err = json.Unmarshal([]byte(out), &checkResult)
+	gomega.Expect(err).To(gomega.BeNil())
+
+	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), getFailedChecks(checkResult))
 }
