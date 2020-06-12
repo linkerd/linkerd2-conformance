@@ -1,6 +1,7 @@
 package conformance_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/linkerd/linkerd2-conformance/specs/check"
@@ -12,7 +13,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	utils.InitTestHelper()
+	err := utils.InitTestHelper()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	_ = m.Run()
 }
 

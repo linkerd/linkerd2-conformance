@@ -21,7 +21,7 @@ func testControlPlaneInstall(h *testutil.TestHelper) {
 	args := []string{
 		"--controller-log-level", "debug",
 		"--proxy-log-level", "warn,linkerd2_proxy=debug",
-		"--proxy-version", h.GetVersion(),
+		// "--proxy-version", h.GetVersion(),
 	}
 	if h.GetClusterDomain() != "cluster.local" {
 		args = append(args, "--cluster-domain", h.GetClusterDomain())
@@ -39,7 +39,6 @@ func testControlPlaneInstall(h *testutil.TestHelper) {
 
 	ginkgo.By("attempting to apply manifests to your cluster")
 	out, err = h.KubectlApply(out, "")
-
 	gomega.Expect(err).To(gomega.BeNil())
 }
 
