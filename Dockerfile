@@ -22,8 +22,7 @@ COPY --from=build /conformance/conformance /conformance
 
 # Copy run script
 
-COPY ./testdata .
-COPY ./run.sh .
+COPY ./sonobuoy/run.sh .
 
 CMD ["/bin/bash", "run.sh"]
 

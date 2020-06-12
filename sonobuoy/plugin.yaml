@@ -2,6 +2,10 @@ podSpec:
   containers: []
   restartPolicy: Never
   serviceAccountName: sonobuoy-serviceaccount
+  volumes:
+      - name: test-config
+        configMap:
+            name: l5d-config
   tolerations:
   - effect: NoSchedule
     key: node-role.kubernetes.io/master
@@ -26,3 +30,7 @@ spec:
   volumeMounts:
   - mountPath: /tmp/results
     name: results
+  - mountPath: /config.yaml
+    subPath: config.yaml
+    name: test-config
+    readOnly: true

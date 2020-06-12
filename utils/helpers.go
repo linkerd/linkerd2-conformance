@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/linkerd/linkerd2/testutil"
@@ -12,9 +13,11 @@ import (
 var TestHelper *testutil.TestHelper
 
 func InitTestHelper() error {
+
 	var opt *ConformanceTestOptions
 
 	if fileExists("config.yaml") {
+		log.Println("we found file")
 		yamlFile, err := ioutil.ReadFile("config.yaml")
 		if err != nil {
 			return err
@@ -27,6 +30,7 @@ func InitTestHelper() error {
 		opt.parseConfigValues()
 
 	} else {
+		log.Println("F")
 		opt = getDefaultConformanceOptions()
 	}
 
