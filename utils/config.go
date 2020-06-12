@@ -6,6 +6,13 @@ import (
 	"github.com/linkerd/linkerd2/testutil"
 )
 
+var (
+	defaultNs            = "l5d-conformance"
+	defaultClusterDomain = "cluster.local"
+	defaultVersion       = "stable-2.8.0"
+	defaultPath          = "/.linkerd2/bin/linkerd"
+)
+
 type ConformanceTestOptions struct {
 	LinkerdVersion     string                 `yaml:"linkerdVersion,omitempty"`
 	LinkerdNamespace   string                 `yaml:"linkerdNamespace,omitempty"`
@@ -22,46 +29,39 @@ type ConformanceTestOptions struct {
 }
 
 func getDefaultConformanceOptions() *ConformanceTestOptions {
-	return &ConformanceTestOptions{
-		LinkerdVersion:     "stable-2.8.0",
-		LinkerdNamespace:   "l5d-conformance",
-		UpgradeFromVersion: "",
-		ClusterDomain:      "cluster.local",
-		ExternalIssuer:     false,
-		Uninstall:          true,
-		AddOns:             make(map[string]interface{}),
-	}
+	options := ConformanceTestOptions{}
+	options.parseConfigValues()
+	options.Uninstall = true // uninstall by defaut
+
+	return &options
 }
 
 func (options *ConformanceTestOptions) parseConfigValues() {
-	var (
-		defaultNs            = "l5d-conformance"
-		defaultClusterDomain = "cluster.local"
-		defaultVersion       = "stable-2.8.0"
-	)
 	if options.LinkerdVersion == "" {
-		fmt.Println("Unspecified linkerd2 version - using default value \"stable-2.7.0\"")
+		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", defaultVersion)
 		options.LinkerdVersion = defaultVersion
 
 		// TODO: use the version API to fetch the latest stable instead of hard-coding values
 	}
 
 	if options.LinkerdNamespace == "" {
-		fmt.Println("Unspecified linkerd2 control plane namespace - use default value \"l5d-conformance\"")
+		fmt.Printf("Unspecified linkerd2 control plane namespace - use default value \"%s\"\n", defaultNs)
 		options.LinkerdNamespace = defaultNs
 	}
 
 	if options.ClusterDomain == "" {
-		fmt.Println("Unspecified cluster domain - using default value \"cluster.local\"")
+		fmt.Printf("Unspecified cluster domain - using default value \"%s\"\n", defaultClusterDomain)
 		options.ClusterDomain = defaultClusterDomain
+	}
+
+	if options.LinkerdBinaryPath == "" {
+		fmt.Printf("Unspecified path to linkerd2 binary - using default value \"%s\"\n", defaultPath)
 	}
 
 }
 
 func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.TestHelper {
 	var (
-		linkerdPath = "/home/mayank/.linkerd2/bin/linkerd"
-
 		//TODO: move these to ConformanceTestOptions while writing Helm tests
 		helmPath        = "target/helm"
 		helmChart       = "charts/linkerd2"
@@ -70,7 +70,7 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.
 	)
 
 	return testutil.NewGenericTestHelper(
-		linkerdPath,
+		options.LinkerdBinaryPath,
 		options.LinkerdNamespace,
 		options.UpgradeFromVersion,
 		options.ClusterDomain,
