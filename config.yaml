@@ -1,0 +1,15 @@
+linkerdVersion: stable-2.8.0
+externalIssuer: false
+uninstall: false
+addOns:
+    tracing:
+        enabled: true
+        collector:
+            resources:
+                cpu:
+                    limit: 100m
+                    request: 10m
+                memory:
+                    limit: 100Mi
+                    request: 50Mi:W
+        
