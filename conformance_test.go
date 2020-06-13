@@ -27,11 +27,11 @@ func TestConformance(t *testing.T) {
 
 		// TODO: These tests may have to be moved to `BeforeSuite` depending on how we add the upcoming tests
 
-		_ = check.NewCheckSpec(true)  // pre checks
-		_ = install.NewInstallSpec()  // install
-		_ = check.NewCheckSpec(false) // post checks
+		_ = check.NewCheckSpec(true) // pre checks
+		// _ = install.NewInstallSpec()  // install
+		// _ = check.NewCheckSpec(false) // post checks
 
-		_ = uninstall.NewUninstallSpec() // uninstall
+		// _ = uninstall.NewUninstallSpec() // uninstall
 
 		// TODO: The order of these checks is not final. As we start adding the more important checks,
 		// we may want to run the install, uninstall and check tests for each of the tests.

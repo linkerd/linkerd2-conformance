@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/linkerd/linkerd2/testutil"
 )
@@ -28,15 +29,25 @@ type ConformanceTestOptions struct {
 	// TODO: Add fields for Helm tests
 }
 
-func getDefaultConformanceOptions() *ConformanceTestOptions {
+func getDefaultConformanceOptions() (*ConformanceTestOptions, error) {
 	options := ConformanceTestOptions{}
-	options.parseConfigValues()
+	if err := options.parseConfigValues(); err != nil {
+		return nil, err
+	}
 	options.Uninstall = true // uninstall by defaut
 
-	return &options
+	return &options, nil
 }
 
-func (options *ConformanceTestOptions) parseConfigValues() {
+func getDefaultLinkerdPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s/.linkerd2/bin/linkerd", home), nil
+}
+
+func (options *ConformanceTestOptions) parseConfigValues() error {
 	if options.LinkerdVersion == "" {
 		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", defaultVersion)
 		options.LinkerdVersion = defaultVersion
@@ -55,9 +66,15 @@ func (options *ConformanceTestOptions) parseConfigValues() {
 	}
 
 	if options.LinkerdBinaryPath == "" {
-		fmt.Printf("Unspecified path to linkerd2 binary - using default value \"%s\"\n", defaultPath)
+		path, err := getDefaultLinkerdPath()
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Unspecified path to linkerd2 binary - using default value \"%s\"\n", path)
+		options.LinkerdBinaryPath = path
 	}
 
+	return nil
 }
 
 func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.TestHelper {
