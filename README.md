@@ -2,11 +2,11 @@
 
 This repo contains the conformance tests for [Linkerd2](https://github.com/linkerd/linkerd2) as described by [this](https://github.com/linkerd/rfc/pull/24) RFC.
 
-The conformance validation tool is primarily intended to be run against an installation of Linkerd2 to verify the correctness of a [Kubernetes](https://kubernetes.io/) cluster's configuration with respect to Linkerd as well as validate non-trivial network communication (HTTP, gRPC, websocket) among stateless and stateful workloads in the Linkerd data plane.
+The conformance validation tool is primarily intended to be run on a specified version of Linkerd to verify the correctness of a [Kubernetes](https://kubernetes.io/) cluster's configuration with respect to Linkerd as well as validate non-trivial network communication (HTTP, gRPC, websocket) among stateless and stateful workloads in the Linkerd data plane.
 
 The conformance tests exercise the following features:
 
-- [ ] Validation of your LInkerd2 control plane
+- [ ] Validation of your Linkerd2 control plane
 - [ ] Automatic proxy injection on workloads
 - [ ] Functioning of  `linkerd tap`, `stat`, `routes` and `edges` commands
 - [ ] Verifying the functioning of the `tap` extension API server
@@ -24,9 +24,9 @@ This section outlines the various methods that can be used to run the conformanc
 
 ### Configuring the tests
 
-The conformance tests can easily be configured by specifying a `config.yaml` that holds these configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
+The conformance tests can easily be configured by specifying a `config.yaml` that holds the configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
 
-Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your needs.
+Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your requirements.
 
 ```bash
 $ curl -sL https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml > config.yaml
@@ -89,6 +89,8 @@ $ cd results
 # Output the detailed summary of the tests
 $ cat podlogs/sonobuoy/sonobuoy-linkerd2-conformance-job-*/logs/plugin.txt
 ```
+
+Optionally, if you do not want to specify a test configuration and instead simply use the default configuration, you may have to modify the plugin file to remove the mounted ConfigMap `test-config`.
 
 ### Running the tests locally
 
