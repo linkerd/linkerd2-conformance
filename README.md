@@ -67,7 +67,7 @@ $ sonobuoy status
 $ results=$(sonobuoy retrieve)
 
 # Inspect the results
-$ sonobuoy results $result --mode detailed | jq
+$ sonobuoy results $results --mode detailed | jq
 
 # Clean up your cluster
 $ sonobuoy delete --wait
