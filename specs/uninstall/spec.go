@@ -7,8 +7,15 @@ import (
 
 // NewUninstallSpec returns a new spec for linkerd uninstall
 func NewUninstallSpec() bool {
-	return ginkgo.Context("uninstall process", func() {
+	return ginkgo.Describe("uninstall process", func() {
 		h := utils.TestHelper
+
+		ginkgo.BeforeEach(func() {
+			if !h.Uninstall() {
+				ginkgo.Skip("Skipping uninstall")
+			}
+		})
+
 		ginkgo.It("should remove the installed control plane", func() {
 			testControlPlaneUninstall(h)
 		})

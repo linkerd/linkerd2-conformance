@@ -8,7 +8,7 @@ import (
 
 // NewInstallSpec returns a new install test spec
 func NewInstallSpec() bool {
-	return ginkgo.Context("`linkerd install`", func() {
+	return ginkgo.Describe("`linkerd install`", func() {
 		var h *testutil.TestHelper
 
 		ginkgo.BeforeEach(func() {
