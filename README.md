@@ -22,23 +22,41 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 
 This section outlines the various methods that can be used to run the conformance tests against your [Kubernetes](https://kubernetes.io/) cluster
 
-### Using Sonobuoy
+### Configuring the tests
+
+The conformance tests can easily be configured by specifying a `config.yaml` that holds these configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
+
+Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your needs.
+
+```bash
+$ curl -sL https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml > config.yaml
+```
+
+> Note: Not providing a configuration file will cause the tests to run on default settings
+
+### Using the Sonobuoy CLI
 
 [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) offers a reliable way to run diagnostic tests in a Kuberenetes cluster. We leverage its [plugin model](https://sonobuoy.io/docs/master/plugins/) to run conformance tests inside a Kubernetes pod.
 
-#### Using the Sonobuoy CLI
 
-These commands assume that the user has the [Sonobuoy CLI](https://github.com/vmware-tanzu/sonobuoy#installation) and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) (with a correctly configured `kubeconfig`) installed locally.
+The below commands assume that the user has the [Sonobuoy CLI](https://github.com/vmware-tanzu/sonobuoy#installation) and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) (with a correctly configured `kubeconfig`) installed locally.
 
 This repo provides a Sonobuoy plugin file that is intended to be plugged into the Sonobuoy CLI. Sonobuoy reads the plugin definition, and spins up a pod with the [linkerd2-conformance Docker image]().
 
 ```bash
+# Create a ConfigMap from the `config.yaml` mentioned in the previous section
+# This step allows the sonobuoy pod to read the test configurations.
+$ kubectl create ns sonobuoy && \
+  kubectl create cm l5d-config \
+  -n sonobuoy \
+  --from-file=config.yaml=/path/to/config.yaml
+
 # Run the plugin
 $ plugin=https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/sonobuoy/plugin.yaml
 
 $ sonobuoy run \
   --plugin $plugin \
-  --plugin-env linkerd2-conformance.LINKERD2_VERSION=[VERSION]\
+  --skip-preflight \
   --wait
 
 # [Optional] Check the status of the pod
@@ -90,10 +108,7 @@ $ bin/go-test [OPTIONS]
 
 # This command installs the control plane under the "l5d-conformance" namespace,
 # tests exteral issuers and uninstalls the control plane once the tests complete
-$ bin/go-test \
-  -linkerd-namespace l5d-conformance \
-  -externalIssuer \
-  -uninstall
+$ bin/go-test -ginkgo.v
 ```
 
 Additionally, as this project uses [Ginkgo](https://github.com/onsi/ginkgo) for the tests, you may also pass flags options from the [Ginkgo CLI](https://onsi.github.io/ginkgo/#the-ginkgo-cli).
