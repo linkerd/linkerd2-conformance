@@ -1,6 +1,6 @@
 linkerdVersion: stable-2.8.0
 externalIssuer: false
-uninstall: false
+uninstall: true
 addOns:
     tracing:
         enabled: true

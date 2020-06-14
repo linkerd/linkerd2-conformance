@@ -6,8 +6,8 @@ import (
 	"github.com/onsi/ginkgo"
 )
 
-// NewInstallSpec returns a new install test spec
-func NewInstallSpec() bool {
+// RunInstallSpec runs the tests for `install`
+func RunInstallSpec() bool {
 	return ginkgo.Describe("`linkerd install`", func() {
 		var h *testutil.TestHelper
 

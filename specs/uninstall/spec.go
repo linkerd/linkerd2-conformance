@@ -5,9 +5,9 @@ import (
 	"github.com/onsi/ginkgo"
 )
 
-// NewUninstallSpec returns a new spec for linkerd uninstall
-func NewUninstallSpec() bool {
-	return ginkgo.Describe("uninstall process", func() {
+// RunUninstallSpec runs the tests for `linkerd uninstall`
+func RunUninstallSpec() bool {
+	return ginkgo.Describe("`linkerd uninstall`", func() {
 		h := utils.TestHelper
 
 		ginkgo.BeforeEach(func() {
