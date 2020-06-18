@@ -11,10 +11,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// TestHelper stores an instace of tesutil.TestHelper
 var TestHelper *testutil.TestHelper
 
-const install_env = "LINKERD2_VERSION"
+const installEnv = "LINKERD2_VERSION"
 
+// InitTestHelper initializes a test helper
 func InitTestHelper() error {
 
 	var opt *ConformanceTestOptions
@@ -41,8 +43,7 @@ func InitTestHelper() error {
 		}
 	}
 
-	TestHelper = opt.initNewTestHelperFromOptions()
-	err = initK8sHelper(opt, TestHelper)
+	TestHelper, err = opt.initNewTestHelperFromOptions()
 	if err != nil {
 		return err
 	}
@@ -61,16 +62,6 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-func initK8sHelper(options *ConformanceTestOptions, h *testutil.TestHelper) error {
-	k8sHelper, err := testutil.NewKubernetesHelper(options.K8sContext, h.RetryFor)
-	if err != nil {
-		return fmt.Errorf("Error creating K8s helper: %s", err)
-	}
-	h.KubernetesHelper = *k8sHelper
-
-	return nil
 }
 
 func fetchInstallScript() ([]byte, error) {
@@ -125,7 +116,7 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 		return err
 	}
 
-	os.Setenv(install_env, version)
+	os.Setenv(installEnv, version)
 
 	cmd := exec.Command("/bin/sh", file)
 	cmd.Stdout = os.Stdout

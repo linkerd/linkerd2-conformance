@@ -2,7 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/linkerd/linkerd2/testutil"
 )
@@ -14,6 +16,7 @@ var (
 	defaultPath          = "/.linkerd2/bin/linkerd"
 )
 
+// ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion     string                 `yaml:"linkerdVersion,omitempty"`
 	LinkerdNamespace   string                 `yaml:"linkerdNamespace,omitempty"`
@@ -77,7 +80,16 @@ func (options *ConformanceTestOptions) parseConfigValues() error {
 	return nil
 }
 
-func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.TestHelper {
+func initK8sHelper(context string, retryFor func(time.Duration, func() error) error) (*testutil.KubernetesHelper, error) {
+	k8sHelper, err := testutil.NewKubernetesHelper(context, retryFor)
+	if err != nil {
+		return nil, err
+	}
+
+	return k8sHelper, nil
+}
+
+func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil.TestHelper, error) {
 	var (
 		//TODO: move these to ConformanceTestOptions while writing Helm tests
 		helmPath        = "target/helm"
@@ -86,8 +98,13 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.
 		helmReleaseName = ""
 	)
 
-	return testutil.NewGenericTestHelper(
+	httpClient := http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	helper := testutil.NewGenericTestHelper(
 		options.LinkerdBinaryPath,
+		options.LinkerdVersion,
 		options.LinkerdNamespace,
 		options.UpgradeFromVersion,
 		options.ClusterDomain,
@@ -97,5 +114,15 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() *testutil.
 		helmReleaseName,
 		options.ExternalIssuer,
 		options.Uninstall,
+		httpClient,
+		testutil.KubernetesHelper{},
 	)
+
+	k8sHelper, err := initK8sHelper(options.K8sContext, helper.RetryFor)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing k8s helper: %s", err)
+	}
+
+	helper.KubernetesHelper = *k8sHelper
+	return helper, nil
 }
