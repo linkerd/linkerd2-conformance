@@ -53,8 +53,7 @@ func InitTestHelper() error {
 		return err
 	}
 
-	err = installLinkerdIfNotExists(opt.LinkerdBinaryPath, opt.LinkerdVersion)
-	if err != nil {
+	if err = installLinkerdIfNotExists(opt.LinkerdBinaryPath, opt.LinkerdVersion); err != nil {
 		return err
 	}
 
@@ -94,8 +93,7 @@ func makeScriptFile(script []byte, path string) error {
 	file, err := os.Create(path)
 	defer file.Close()
 
-	_, err = file.Write(script)
-	if err != nil {
+	if _, err = file.Write(script); err != nil {
 		return err
 	}
 	return nil
@@ -112,8 +110,7 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 		return err
 	}
 
-	err = makeScriptFile(script, linkerdInstallScript)
-	if err != nil {
+	if err = makeScriptFile(script, linkerdInstallScript); err != nil {
 		return err
 	}
 
@@ -127,8 +124,7 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 		return err
 	}
 
-	err = os.Remove(linkerdInstallScript)
-	if err != nil {
+	if err = os.Remove(linkerdInstallScript); err != nil {
 		return err
 	}
 
