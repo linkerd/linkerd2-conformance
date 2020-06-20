@@ -39,8 +39,8 @@ func testCheck(h *testutil.TestHelper, pre bool) {
 
 	cmd := []string{
 		"check",
-		// "--expected-version",
-		// h.GetVersion(),
+		"--expected-version",
+		h.GetVersion(),
 		"-o",
 		"json",
 	}
