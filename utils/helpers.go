@@ -14,7 +14,12 @@ import (
 // TestHelper stores an instace of tesutil.TestHelper
 var TestHelper *testutil.TestHelper
 
-const installEnv = "LINKERD2_VERSION"
+const (
+	installEnv           = "LINKERD2_VERSION"
+	configFile           = "config.yaml"
+	linkerdInstallScript = "install.sh"
+	installScriptURL     = "https://raw.githubusercontent.com/linkerd/website/master/run.linkerd.io/public/install"
+)
 
 // InitTestHelper initializes a test helper
 func InitTestHelper() error {
@@ -22,8 +27,8 @@ func InitTestHelper() error {
 	var opt *ConformanceTestOptions
 	var err error
 
-	if fileExists("config.yaml") {
-		yamlFile, err := ioutil.ReadFile("config.yaml")
+	if fileExists(configFile) {
+		yamlFile, err := ioutil.ReadFile(configFile)
 		if err != nil {
 			return err
 		}
@@ -66,9 +71,7 @@ func fileExists(filename string) bool {
 
 func fetchInstallScript() ([]byte, error) {
 
-	url := "https://raw.githubusercontent.com/linkerd/website/master/run.linkerd.io/public/install"
-
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", installScriptURL, nil)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -104,21 +107,19 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 		return nil
 	}
 
-	file := "install.sh"
-
 	script, err := fetchInstallScript()
 	if err != nil {
 		return err
 	}
 
-	err = makeScriptFile(script, file)
+	err = makeScriptFile(script, linkerdInstallScript)
 	if err != nil {
 		return err
 	}
 
 	os.Setenv(installEnv, version)
 
-	cmd := exec.Command("/bin/sh", file)
+	cmd := exec.Command("/bin/sh", linkerdInstallScript)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -126,7 +127,7 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 		return err
 	}
 
-	err = os.Remove(file)
+	err = os.Remove(linkerdInstallScript)
 	if err != nil {
 		return err
 	}
