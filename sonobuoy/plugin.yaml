@@ -6,6 +6,7 @@ podSpec:
       - name: test-config
         configMap:
             name: l5d-config
+            optional: true
   tolerations:
   - effect: NoSchedule
     key: node-role.kubernetes.io/master
