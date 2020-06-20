@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -14,6 +16,8 @@ var (
 	defaultClusterDomain = "cluster.local"
 	defaultVersion       = "stable-2.8.0"
 	defaultPath          = "/.linkerd2/bin/linkerd"
+
+	versionEndpointURL = "https://versioncheck.linkerd.io/version.json"
 )
 
 // ConformanceTestOptions holds the values fed from the test config file
@@ -30,6 +34,33 @@ type ConformanceTestOptions struct {
 
 	// TODO: Add fields for test specific configurations
 	// TODO: Add fields for Helm tests
+}
+
+func getLatestStableVersion() (string, error) {
+
+	var versionResp map[string]string
+
+	req, err := http.NewRequest("GET", versionEndpointURL, nil)
+	if err != nil {
+		return "", err
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if err := json.Unmarshal(body, &versionResp); err != nil {
+		return "", err
+	}
+
+	return versionResp["stable"], nil
 }
 
 func getDefaultConformanceOptions() (*ConformanceTestOptions, error) {
@@ -52,10 +83,16 @@ func getDefaultLinkerdPath() (string, error) {
 
 func (options *ConformanceTestOptions) parseConfigValues() error {
 	if options.LinkerdVersion == "" {
-		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", defaultVersion)
-		options.LinkerdVersion = defaultVersion
+		var version string
+		var err error
 
-		// TODO: use the version API to fetch the latest stable instead of hard-coding values
+		if version, err = getLatestStableVersion(); err != nil {
+			fmt.Printf("error fetching latest version: %s\n", err)
+			version = defaultVersion
+		}
+
+		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", version)
+		options.LinkerdVersion = version
 	}
 
 	if options.LinkerdNamespace == "" {

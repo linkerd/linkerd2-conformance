@@ -13,7 +13,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	_ = m.Run()
 }
 
