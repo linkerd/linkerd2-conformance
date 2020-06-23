@@ -26,7 +26,6 @@ func testInjectManual(withParams bool) {
 
 	if withParams {
 		ginkgo.By("Adding manual parameters to `linkerd inject`")
-		gomega.Expect(1).To(gomega.Equal(2))
 		params := []string{
 			"--disable-tap",
 			"--image-pull-policy=Never",
