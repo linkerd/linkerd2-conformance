@@ -3,14 +3,41 @@ package specs
 import (
 	"testing"
 
-	"github.com/linkerd/linkerd2-conformance/specs/check"
-	"github.com/linkerd/linkerd2-conformance/specs/install"
-	"github.com/linkerd/linkerd2-conformance/specs/uninstall"
+	"github.com/linkerd/linkerd2-conformance/specs/inject"
+	"github.com/linkerd/linkerd2-conformance/utils"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 )
 
 func RunAllSpecs(t *testing.T) {
+
+	c := utils.TestConfig
+	h := utils.TestHelper
+
+	// install a single global control plane
+	if c.GlobalControlPlane.Enable {
+		_ = ginkgo.BeforeSuite(func() {
+			utils.InstallLinkerdControlPlane(h)
+		})
+
+		if c.GlobalControlPlane.Uninstall {
+			_ = ginkgo.AfterSuite(func() {
+				utils.UninstallLinkerdControlPlane(h)
+			})
+		}
+	} else {
+		// Install and uninstall a control plane
+		// before and after each It block
+
+		_ = ginkgo.BeforeEach(func() {
+			utils.InstallLinkerdControlPlane(h)
+		})
+
+		_ = ginkgo.AfterEach(func() {
+			utils.UninstallLinkerdControlPlane(h)
+		})
+
+	}
 
 	// A single top-level wrapper Describe is required to prevent
 	// the specs from being run in a random order
@@ -19,10 +46,7 @@ func RunAllSpecs(t *testing.T) {
 	_ = ginkgo.Describe("", func() {
 
 		// Bring tests into scope
-		_ = check.RunCheckSpec(true)     // pre checks
-		_ = install.RunInstallSpec()     // install
-		_ = check.RunCheckSpec(false)    // post checks
-		_ = uninstall.RunUninstallSpec() // uninstall
+		_ = inject.RunInjectSpec()
 
 		// TODO: The install/uninstall/check specs may have to be moved to
 		// `BeforeSuite` depending on how we add the main tests

@@ -11,8 +11,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// TestHelper stores an instace of tesutil.TestHelper
-var TestHelper *testutil.TestHelper
+var (
+	// TestHelper stores a global instace of tesutil.TestHelper
+	TestHelper *testutil.TestHelper
+
+	// TestConfig stores a global instance of the parsed config YAML
+	TestConfig *ConformanceTestOptions
+)
 
 const (
 	installEnv           = "LINKERD2_VERSION"
@@ -24,7 +29,6 @@ const (
 // InitTestHelper initializes a test helper
 func InitTestHelper() error {
 
-	var opt *ConformanceTestOptions
 	var err error
 
 	if fileExists(configFile) {
@@ -33,27 +37,22 @@ func InitTestHelper() error {
 			return err
 		}
 
-		if err := yaml.Unmarshal(yamlFile, &opt); err != nil {
+		if err := yaml.Unmarshal(yamlFile, &TestConfig); err != nil {
 			return err
 		}
 
-		if err := opt.parseConfigValues(); err != nil {
-			return err
-		}
-
-	} else {
-		opt, err = getDefaultConformanceOptions()
-		if err != nil {
-			return err
-		}
 	}
 
-	TestHelper, err = opt.initNewTestHelperFromOptions()
+	if err := TestConfig.parseDefaultConfigValues(); err != nil {
+		return err
+	}
+
+	TestHelper, err = TestConfig.initNewTestHelperFromOptions()
 	if err != nil {
 		return err
 	}
 
-	if err = installLinkerdIfNotExists(opt.LinkerdBinaryPath, opt.LinkerdVersion); err != nil {
+	if err = installLinkerdIfNotExists(TestConfig.LinkerdBinaryPath, TestConfig.LinkerdVersion); err != nil {
 		return err
 	}
 

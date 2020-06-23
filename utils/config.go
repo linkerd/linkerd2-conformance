@@ -20,6 +20,17 @@ var (
 	versionEndpointURL = "https://versioncheck.linkerd.io/version.json"
 )
 
+// Inject holds the inject test configuration
+type Inject struct {
+	Skip bool `yaml:"skip,omitempty"`
+}
+
+// GlobalControlPlane holds the options for installing a single control plane
+type GlobalControlPlane struct {
+	Enable    bool `yaml:"enable,omitempty"`
+	Uninstall bool `yaml:"uninstall,omitempty"`
+}
+
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion     string                 `yaml:"linkerdVersion,omitempty"`
@@ -29,8 +40,9 @@ type ConformanceTestOptions struct {
 	ClusterDomain      string                 `yaml:"clusterDomain,omitempty"`
 	K8sContext         string                 `yaml:"k8sContext,omitempty"`
 	ExternalIssuer     bool                   `yaml:"externalIssuer,omitempty"`
-	Uninstall          bool                   `yaml:"uninstall,omitempty"`
 	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
+	GlobalControlPlane `yaml:"globalControlPlane"`
+	Inject             `yaml:"inject"`
 
 	// TODO: Add fields for test specific configurations
 	// TODO: Add fields for Helm tests
@@ -63,16 +75,6 @@ func getLatestStableVersion() (string, error) {
 	return versionResp["stable"], nil
 }
 
-func getDefaultConformanceOptions() (*ConformanceTestOptions, error) {
-	options := ConformanceTestOptions{}
-	if err := options.parseConfigValues(); err != nil {
-		return nil, err
-	}
-	options.Uninstall = true // uninstall by defaut
-
-	return &options, nil
-}
-
 func getDefaultLinkerdPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -81,7 +83,16 @@ func getDefaultLinkerdPath() (string, error) {
 	return fmt.Sprintf("%s/.linkerd2/bin/linkerd", home), nil
 }
 
-func (options *ConformanceTestOptions) parseConfigValues() error {
+func initK8sHelper(context string, retryFor func(time.Duration, func() error) error) (*testutil.KubernetesHelper, error) {
+	k8sHelper, err := testutil.NewKubernetesHelper(context, retryFor)
+	if err != nil {
+		return nil, err
+	}
+
+	return k8sHelper, nil
+}
+
+func (options *ConformanceTestOptions) parseDefaultConfigValues() error {
 	if options.LinkerdVersion == "" {
 		var version string
 		var err error
@@ -114,16 +125,12 @@ func (options *ConformanceTestOptions) parseConfigValues() error {
 		options.LinkerdBinaryPath = path
 	}
 
-	return nil
-}
-
-func initK8sHelper(context string, retryFor func(time.Duration, func() error) error) (*testutil.KubernetesHelper, error) {
-	k8sHelper, err := testutil.NewKubernetesHelper(context, retryFor)
-	if err != nil {
-		return nil, err
+	if !options.GlobalControlPlane.Enable && options.GlobalControlPlane.Uninstall {
+		fmt.Println("globalControlPlane.uninstall will be ignored as globalControlPlane is disabled")
+		options.GlobalControlPlane.Uninstall = false
 	}
 
-	return k8sHelper, nil
+	return nil
 }
 
 func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil.TestHelper, error) {
@@ -150,7 +157,7 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		helmStableChart,
 		helmReleaseName,
 		options.ExternalIssuer,
-		options.Uninstall,
+		options.GlobalControlPlane.Uninstall,
 		httpClient,
 		testutil.KubernetesHelper{},
 	)

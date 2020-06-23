@@ -12,8 +12,10 @@ func TestMain(m *testing.M) {
 	err := utils.InitTestHelper()
 	if err != nil {
 		fmt.Println(err)
+
+	} else {
+		_ = m.Run()
 	}
-	_ = m.Run()
 }
 
 func TestConformance(t *testing.T) {
