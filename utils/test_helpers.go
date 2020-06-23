@@ -48,13 +48,14 @@ func runCheck(h *testutil.TestHelper, pre bool) {
 
 	if pre {
 		cmd = append(cmd, "--pre")
+		ginkgo.By("Running pre-installation checks")
 	}
 
-	ginkgo.By("running check command")
+	ginkgo.By("Running post-installation checks")
 	out, stderr, err := h.LinkerdRun(cmd...)
 	gomega.Expect(stderr).To(gomega.Equal(""))
 
-	ginkgo.By("validating `check` output")
+	ginkgo.By("Validating `check` output")
 	err = json.Unmarshal([]byte(out), &checkResult)
 	gomega.Expect(err).To(gomega.BeNil())
 
@@ -84,11 +85,11 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper) {
 
 	exec := append([]string{cmd}, args...)
 
-	ginkgo.By("attempting to issue `linkerd install` and gather the manifests")
+	ginkgo.By("Attempting to issue `linkerd install` and gather the manifests")
 	out, stderr, err := h.LinkerdRun(exec...)
 	gomega.Expect(stderr).To(gomega.Equal(""))
 
-	ginkgo.By("attempting to apply manifests to your cluster")
+	ginkgo.By("Attempting to apply manifests to your cluster")
 	out, err = h.KubectlApply(out, "")
 	gomega.Expect(err).To(gomega.BeNil())
 
@@ -104,13 +105,13 @@ func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
 
 	exec := append([]string{cmd}, args...)
 
-	ginkgo.By("gathering control plane manigfests and piping to `kubectl delete`")
+	ginkgo.By("Gathering control plane manigfests and piping to `kubectl delete`")
 	out, stderr, err := h.LinkerdRun(exec...)
 	gomega.Expect(stderr).To(gomega.Equal(""))
 
 	args = []string{"delete", "-f", "-"}
 
-	ginkgo.By("attempting to delete resources to your cluster")
+	ginkgo.By("Attempting to delete resources to your cluster")
 	out, err = h.Kubectl(out, args...)
 	gomega.Expect(err).To(gomega.BeNil())
 

@@ -15,7 +15,7 @@ func RunInjectSpec() bool {
 			})
 
 			ginkgo.Context("with parameters", func() {
-				testInjectManual(false)
+				testInjectManual(true)
 			})
 		})
 
