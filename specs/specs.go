@@ -12,9 +12,11 @@ import (
 
 func RunAllSpecs(t *testing.T) {
 
-	// This is the main Describe block that holds the specs
-	// This block acts as the main entry point into the specs
-	_ = ginkgo.Describe("Running conformance test", func() {
+	// A single top-level wrapper Describe is required to prevent
+	// the specs from being run in a random order
+	// The Describe message is intentionally left empty
+	// as it only serves to prevent randomization of specs
+	_ = ginkgo.Describe("", func() {
 
 		// Bring tests into scope
 		_ = check.RunCheckSpec(true)     // pre checks
