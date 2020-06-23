@@ -1,0 +1,46 @@
+Unspecified linkerd2 control plane namespace - use default value "l5d-conformance"
+Unspecified cluster domain - using default value "cluster.local"
+Unspecified path to linkerd2 binary - using default value "/root/.linkerd2/bin/linkerd"
+Downloading linkerd2-cli-stable-2.8.0-linux...
+Download complete!
+
+Validating checksum...
+Checksum valid.
+
+Linkerd stable-2.8.0 was successfully installed 🎉
+
+
+Add the linkerd CLI to your path with:
+
+  export PATH=$PATH:/root/.linkerd2/bin
+
+Now run:
+
+  linkerd check --pre                     # validate that Linkerd can be installed
+  linkerd install | kubectl apply -f -    # install the control plane into the 'linkerd' namespace
+  linkerd check                           # validate everything worked!
+  linkerd dashboard                       # launch the dashboard
+
+Looking for more? Visit https://linkerd.io/2/next-steps
+
+Running Suite: linkerd2 conformance validation
+==============================================
+Random Seed: [1m1592915959[0m
+Will run [1m1[0m of [1m1[0m specs
+
+[32m• [SLOW TEST:93.053 seconds][0m
+
+[90m/conformance/specs/specs.go:46[0m
+  `linkerd inject`
+  [90m/conformance/specs/inject/spec.go:9[0m
+    can perform manual injection
+    [90m/conformance/specs/inject/spec.go:11[0m
+[90m------------------------------[0m
+
+JUnit path was configured: /tmp/results/report.xml
+
+JUnit report was created: /tmp/results/report.xml
+
+[1m[32mRan 1 of 1 Specs in 93.053 seconds[0m
+[1m[32mSUCCESS![0m -- [32m[1m1 Passed[0m | [91m[1m0 Failed[0m | [33m[1m0 Pending[0m | [36m[1m0 Skipped[0m
+PASS
