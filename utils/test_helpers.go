@@ -54,11 +54,11 @@ func runCheck(h *testutil.TestHelper, pre bool) {
 	}
 
 	out, stderr, err := h.LinkerdRun(cmd...)
-	gomega.Expect(stderr).To(gomega.Equal(""))
+	gomega.Expect(err).Should(gomega.BeNil(), stderr)
 
 	ginkgo.By("Validating `check` output")
 	err = json.Unmarshal([]byte(out), &checkResult)
-	gomega.Expect(err).To(gomega.BeNil())
+	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
 	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), getFailedChecks(checkResult))
 }
@@ -89,17 +89,17 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper) {
 
 	ginkgo.By("Running `linkerd install`")
 	out, stderr, err := h.LinkerdRun(exec...)
-	gomega.Expect(stderr).To(gomega.Equal(""))
+	gomega.Expect(err).Should(gomega.BeNil(), stderr)
 
 	ginkgo.By("Applying control plane manifests")
 	out, err = h.KubectlApply(out, "")
-	gomega.Expect(err).To(gomega.BeNil())
+	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
 	runCheck(h, false) // run post checks
 }
 
 func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
-	ginkgo.By("Uninstalling linkerd control plae")
+	ginkgo.By("Uninstalling linkerd control plane")
 	cmd := "install"
 	args := []string{
 		"--ignore-cluster",
@@ -109,13 +109,13 @@ func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
 
 	ginkgo.By("Gathering control plane manifests")
 	out, stderr, err := h.LinkerdRun(exec...)
-	gomega.Expect(stderr).To(gomega.Equal(""))
+	gomega.Expect(err).Should(gomega.BeNil(), stderr)
 
 	args = []string{"delete", "-f", "-"}
 
 	ginkgo.By("Deleting resources from the cluster")
 	out, err = h.Kubectl(out, args...)
-	gomega.Expect(err).To(gomega.BeNil())
+	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
 	runCheck(h, true) // run pre checks
 }
