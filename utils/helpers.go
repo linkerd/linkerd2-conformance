@@ -37,8 +37,8 @@ func InitTestHelper() error {
 			return err
 		}
 
-		if err := yaml.Unmarshal(yamlFile, &TestConfig); err != nil {
-			return err
+		if err := yaml.UnmarshalStrict(yamlFile, &TestConfig); err != nil {
+			return fmt.Errorf("failed to parse YAML: %s", err.Error())
 		}
 
 	}

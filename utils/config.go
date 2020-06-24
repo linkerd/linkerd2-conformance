@@ -22,7 +22,8 @@ var (
 
 // Inject holds the inject test configuration
 type Inject struct {
-	Skip bool `yaml:"skip,omitempty"`
+	Skip  bool `yaml:"skip,omitempty"`
+	Clean bool `yaml:"clean,omitempty"` // deletes all resources created while testing
 }
 
 // GlobalControlPlane holds the options for installing a single control plane
