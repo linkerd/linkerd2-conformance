@@ -19,5 +19,8 @@ func RunInjectSpec() bool {
 			})
 		})
 
+		ginkgo.It("can inject proxy container into pods", func() {
+			testProxyInjection()
+		})
 	})
 }

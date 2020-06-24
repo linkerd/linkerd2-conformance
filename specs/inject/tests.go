@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/linkerd/linkerd2-conformance/utils"
+	"github.com/linkerd/linkerd2/pkg/k8s"
 	"github.com/linkerd/linkerd2/testutil"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
@@ -60,4 +61,40 @@ func testInjectManual(withParams bool) {
 	ginkgo.By("Validating injected output")
 	err = testutil.ValidateInject(out, golden, testHelper)
 	gomega.Expect(err).To(gomega.BeNil())
+}
+
+func testProxyInjection() {
+	h := utils.TestHelper
+
+	ginkgo.By("Reading pod YAML")
+	podYAML, err := testutil.ReadFile("testdata/inject/pod.yaml")
+	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
+
+	injectNs := "inject-pod-test"
+	podName := "inject-pod-test-terminus"
+	nsAnnotations := map[string]string{
+		k8s.ProxyInjectAnnotation: k8s.ProxyInjectEnabled,
+	}
+
+	ns := h.GetTestNamespace(injectNs)
+	ginkgo.By(fmt.Sprintf("Creating data plane namespace %s", ns))
+	err = h.CreateDataPlaneNamespaceIfNotExists(ns, nsAnnotations)
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create namespace %s: %s", ns, utils.Err(err)))
+
+	ginkgo.By(fmt.Sprintf("Creating test pod in namespace %s", ns))
+	o, err := h.Kubectl(podYAML, "-n", ns, "create", "-f", "-")
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create pod/%s in namespace %s for %s: %s", podName, ns, utils.Err(err), o))
+
+	ginkgo.By("Waiting for pod to be initialized")
+	o, err = h.Kubectl("", "-n", ns, "wait", "--for=condition=initialized", "--timeout=120s", "pod/"+podName)
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to wait for pod/%s to be initialized in namespace %s: %s: %s", podName, ns, utils.Err(err), o))
+
+	ginkgo.By(fmt.Sprintf("Getting pods from namespace %s", ns))
+	pods, err := h.GetPods(ns, map[string]string{"app": podName})
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pods in namespace %s", ns))
+	gomega.Expect(len(pods)).Should(gomega.Equal(1), fmt.Sprintf("found %d pods, expected %d", len(pods), 1))
+
+	containers := pods[0].Spec.Containers
+	proxyContainers := testutil.GetProxyContainer(containers)
+	gomega.Expect(proxyContainers).ShouldNot(gomega.BeNil(), fmt.Sprint("proxy container not injected"))
 }

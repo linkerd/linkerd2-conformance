@@ -129,3 +129,16 @@ func installLinkerdIfNotExists(linkerd, version string) error {
 
 	return nil
 }
+
+// Err returns err.Error() string
+// if err is not nil
+// This helper is meant to be used with
+// gomega.Should() to annotate failures
+// without causing runtime errors when
+// returned errors are nil
+func Err(err error) string {
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}

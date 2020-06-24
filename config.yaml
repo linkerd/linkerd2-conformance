@@ -1,7 +1,8 @@
 linkerdVersion: stable-2.8.0
 externalIssuer: false
 globalControlPlane:
-    enable: false
+    enable: true
+    uninstall: true
 addOns:
     tracing:
         enabled: true
