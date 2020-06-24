@@ -14,7 +14,7 @@ func RunAllSpecs(t *testing.T) {
 	c := utils.TestConfig
 	h := utils.TestHelper
 
-	// install a single global control plane
+	// Install a single global control plane
 	if c.GlobalControlPlane.Enable {
 		_ = ginkgo.BeforeSuite(func() {
 			utils.InstallLinkerdControlPlane(h)
@@ -28,7 +28,9 @@ func RunAllSpecs(t *testing.T) {
 	} else {
 		// Install and uninstall a control plane
 		// before and after each It block
-
+		// This means, while writing a new test suite,
+		// each major feature must be wrapped in its own
+		// It block
 		_ = ginkgo.BeforeEach(func() {
 			utils.InstallLinkerdControlPlane(h)
 		})
@@ -47,13 +49,6 @@ func RunAllSpecs(t *testing.T) {
 
 		// Bring tests into scope
 		_ = inject.RunInjectSpec()
-
-		// TODO: The install/uninstall/check specs may have to be moved to
-		// `BeforeSuite` depending on how we add the main tests
-
-		// TODO: The order of these checks is not final. As we start adding the more important checks,
-		// we may want to run the install, uninstall and check tests for each of the tests.
-		// Further, the test config file may also have an option to enable global install / uninstall.
 	})
 
 	gomega.RegisterFailHandler(ginkgo.Fail)
