@@ -34,7 +34,8 @@ func getFailedChecks(r *CheckOutput) string {
 	return err
 }
 
-func runCheck(h *testutil.TestHelper, pre bool) {
+// RunCheck rus `linkerd check`
+func RunCheck(h *testutil.TestHelper, pre bool) {
 
 	var checkResult *CheckOutput
 
@@ -65,7 +66,7 @@ func runCheck(h *testutil.TestHelper, pre bool) {
 
 func InstallLinkerdControlPlane(h *testutil.TestHelper) {
 	ginkgo.By("Installing linkerd control plane")
-	runCheck(h, true) // run pre checks
+	RunCheck(h, true) // run pre checks
 
 	if err := h.CheckIfNamespaceExists(h.GetLinkerdNamespace()); err == nil {
 		ginkgo.Skip(fmt.Sprintf("linkerd control plane already exists in namespace %s", h.GetLinkerdNamespace()))
@@ -95,7 +96,7 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper) {
 	out, err = h.KubectlApply(out, "")
 	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
-	runCheck(h, false) // run post checks
+	RunCheck(h, false) // run post checks
 }
 
 func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
@@ -117,5 +118,5 @@ func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
 	out, err = h.Kubectl(out, args...)
 	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
-	runCheck(h, true) // run pre checks
+	RunCheck(h, true) // run pre checks
 }
