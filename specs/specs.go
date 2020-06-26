@@ -13,6 +13,9 @@ import (
 
 func RunAllSpecs(t *testing.T) {
 
+	c := utils.TestConfig
+	globalControlPlane := c.GlobalControlPlane.Enable
+	u := c.GlobalControlPlane.Uninstall
 	// A single top-level wrapper Describe is required to prevent
 	// the specs from being run in a random order
 	// The Describe message is intentionally left empty
@@ -32,31 +35,21 @@ func RunAllSpecs(t *testing.T) {
 		// body of the spec runner function
 		_ = ginkgo.Describe("", func() {
 			_ = install.RunInstallSpec()
-			_ = uninstall.RunUninstallSpec()
+			if !globalControlPlane {
+				_ = uninstall.RunUninstallSpec()
+			}
 		})
 
 		// Run primary tests
 		_ = ginkgo.Describe("", func() {
-			c := utils.TestConfig
 			h := utils.TestHelper
 
-			// Install a single global control plane
-			if c.GlobalControlPlane.Enable {
-				_ = ginkgo.BeforeSuite(func() {
-					utils.InstallLinkerdControlPlane(h)
-				})
-
-				if c.GlobalControlPlane.Uninstall {
-					_ = ginkgo.AfterSuite(func() {
-						utils.UninstallLinkerdControlPlane(h)
-					})
-				}
-			} else {
-				// Install and uninstall a control plane
-				// before and after each It block
-				// This means, while writing a new test suite,
-				// each major feature must be wrapped in its own
-				// It block
+			// Install and uninstall a control plane
+			// before and after each It block
+			// This means, while writing a new test suite,
+			// each major feature must be wrapped in its own
+			// It block
+			if !globalControlPlane {
 				_ = ginkgo.BeforeEach(func() {
 					utils.InstallLinkerdControlPlane(h)
 				})
@@ -67,6 +60,10 @@ func RunAllSpecs(t *testing.T) {
 
 			}
 			_ = inject.RunInjectSpec()
+
+			if globalControlPlane && u { // should always be at the bottom
+				_ = uninstall.RunUninstallSpec()
+			}
 		})
 	})
 

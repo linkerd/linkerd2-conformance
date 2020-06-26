@@ -7,7 +7,7 @@ import (
 
 // RunUninstallSpec runs the uninstall test suite
 func RunUninstallSpec() bool {
-	return ginkgo.Describe("`linkrd install`", func() {
+	return ginkgo.Describe("`linkerd install`", func() {
 		ginkgo.It("can uninstall control plane", func() {
 			h := utils.TestHelper
 			utils.UninstallLinkerdControlPlane(h)
