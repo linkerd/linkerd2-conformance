@@ -13,6 +13,6 @@ addOns:
                     request: 10m
                 memory:
                     limit: 100Mi
-                    request: 50Mi:W
+                    request: 50Mi
 inject:
     clean: true
