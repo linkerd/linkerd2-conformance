@@ -3,7 +3,6 @@ package specs
 import (
 	"testing"
 
-	"github.com/linkerd/linkerd2-conformance/specs/check"
 	"github.com/linkerd/linkerd2-conformance/specs/inject"
 	"github.com/linkerd/linkerd2-conformance/specs/install"
 	"github.com/linkerd/linkerd2-conformance/specs/uninstall"
