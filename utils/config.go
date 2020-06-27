@@ -22,8 +22,8 @@ var (
 
 // Inject holds the inject test configuration
 type Inject struct {
-	Skip  bool `yaml:"skip,omitempty"`
-	Clean bool `yaml:"clean,omitempty"` // deletes all resources created while testing
+	SkipTest bool `yaml:"skipTest,omitempty"`
+	Clean    bool `yaml:"clean,omitempty"` // deletes all resources created while testing
 }
 
 // GlobalControlPlane holds the options for installing a single control plane
@@ -32,17 +32,23 @@ type GlobalControlPlane struct {
 	Uninstall bool `yaml:"uninstall,omitempty"`
 }
 
+type Install struct {
+	SkipTest           bool `yaml:"skipTest,omitempty"`
+	HA                 bool `yaml:"ha,omitempty"`
+	GlobalControlPlane `yaml:"globalControlPlane,omitempty"`
+	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
+}
+
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
-	LinkerdVersion     string                 `yaml:"linkerdVersion,omitempty"`
-	LinkerdNamespace   string                 `yaml:"linkerdNamespace,omitempty"`
-	LinkerdBinaryPath  string                 `yaml:"linkerdPath,omitempty"`
-	UpgradeFromVersion string                 `yaml:"upgradeFromVersion,omitempty"`
-	ClusterDomain      string                 `yaml:"clusterDomain,omitempty"`
-	K8sContext         string                 `yaml:"k8sContext,omitempty"`
-	ExternalIssuer     bool                   `yaml:"externalIssuer,omitempty"`
-	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
-	GlobalControlPlane `yaml:"globalControlPlane"`
+	LinkerdVersion     string `yaml:"linkerdVersion,omitempty"`
+	LinkerdNamespace   string `yaml:"linkerdNamespace,omitempty"`
+	LinkerdBinaryPath  string `yaml:"linkerdPath,omitempty"`
+	UpgradeFromVersion string `yaml:"upgradeFromVersion,omitempty"`
+	ClusterDomain      string `yaml:"clusterDomain,omitempty"`
+	K8sContext         string `yaml:"k8sContext,omitempty"`
+	ExternalIssuer     bool   `yaml:"externalIssuer,omitempty"`
+	Install            `yaml:"install"`
 	Inject             `yaml:"inject"`
 
 	// TODO: Add fields for test specific configurations
@@ -126,9 +132,9 @@ func (options *ConformanceTestOptions) parseDefaultConfigValues() error {
 		options.LinkerdBinaryPath = path
 	}
 
-	if !options.GlobalControlPlane.Enable && options.GlobalControlPlane.Uninstall {
+	if !options.Install.GlobalControlPlane.Enable && options.Install.GlobalControlPlane.Uninstall {
 		fmt.Println("globalControlPlane.uninstall will be ignored as globalControlPlane is disabled")
-		options.GlobalControlPlane.Uninstall = false
+		options.Install.GlobalControlPlane.Uninstall = false
 	}
 
 	return nil
@@ -158,7 +164,7 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		helmStableChart,
 		helmReleaseName,
 		options.ExternalIssuer,
-		options.GlobalControlPlane.Uninstall,
+		options.Install.GlobalControlPlane.Uninstall,
 		httpClient,
 		testutil.KubernetesHelper{},
 	)
@@ -170,4 +176,14 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 
 	helper.KubernetesHelper = *k8sHelper
 	return helper, nil
+}
+
+// GlobalControlPlane determines if a single contGlobalControlPlane must be used for testing
+func (options *ConformanceTestOptions) GlobalControlPlane() bool {
+	return options.Install.GlobalControlPlane.Enable
+}
+
+// HA determines if a high-availability control-plane must be used
+func (options *ConformanceTestOptions) HA() bool {
+	return options.Install.HA
 }

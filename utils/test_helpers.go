@@ -64,8 +64,8 @@ func RunCheck(h *testutil.TestHelper, pre bool) {
 	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), getFailedChecks(checkResult))
 }
 
-func InstallLinkerdControlPlane(h *testutil.TestHelper) {
-	ginkgo.By("Installing linkerd control plane")
+func InstallLinkerdControlPlane(h *testutil.TestHelper, withHA bool) {
+	ginkgo.By(fmt.Sprintf("Installing linkerd control plane with HA: %v", withHA))
 	RunCheck(h, true) // run pre checks
 
 	if err := h.CheckIfNamespaceExists(h.GetLinkerdNamespace()); err == nil {
@@ -82,6 +82,11 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper) {
 		"--proxy-log-level", "warn,linkerd2_proxy=debug",
 		"--proxy-version", h.GetVersion(),
 	}
+
+	if withHA {
+		args = append(args, "--ha")
+	}
+
 	if h.GetClusterDomain() != "cluster.local" {
 		args = append(args, "--cluster-domain", h.GetClusterDomain())
 	}

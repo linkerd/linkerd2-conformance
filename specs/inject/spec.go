@@ -10,7 +10,7 @@ import (
 // RunInjectSpec runs inject tests
 func RunInjectSpec() bool {
 	return ginkgo.Describe("`linkerd inject`", func() {
-		if skip := utils.TestConfig.Inject.Skip; skip {
+		if skip := utils.TestConfig.Inject.SkipTest; skip {
 			ginkgo.Skip(fmt.Sprintf("Skipping inject tests: inject.skil set to \"%v\" in config YAML", skip))
 		}
 		ginkgo.It("can perform manual injection", func() {

@@ -1,18 +1,22 @@
 linkerdVersion: stable-2.8.0
 externalIssuer: false
-globalControlPlane:
-    enable: true
-    uninstall: true
-addOns:
-    tracing:
-        enabled: true
-        collector:
-            resources:
-                cpu:
-                    limit: 100m
-                    request: 10m
-                memory:
-                    limit: 100Mi
-                    request: 50Mi
+install:
+    skipTest: false
+    ha: false 
+    addOns:
+        tracing:
+            enabled: true
+            collector:
+                resources:
+                    cpu:
+                        limit: 100m
+                        request: 10m
+                    memory:
+                        limit: 100Mi
+                        request: 50Mi
+    globalControlPlane:
+        enable: true
+        uninstall: true
 inject:
+    skipTest: false
     clean: true
