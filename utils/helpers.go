@@ -43,7 +43,7 @@ func InitTestHelper() error {
 
 	}
 
-	if err := TestConfig.parseDefaultConfigValues(); err != nil {
+	if err := TestConfig.parse(); err != nil {
 		return err
 	}
 

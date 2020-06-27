@@ -11,7 +11,7 @@ import (
 func TestMain(m *testing.M) {
 	err := utils.InitTestHelper()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("error initializing tests: %s\n", err.Error())
 
 	} else {
 		_ = m.Run()

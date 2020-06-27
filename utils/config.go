@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -99,7 +100,7 @@ func initK8sHelper(context string, retryFor func(time.Duration, func() error) er
 	return k8sHelper, nil
 }
 
-func (options *ConformanceTestOptions) parseDefaultConfigValues() error {
+func (options *ConformanceTestOptions) parse() error {
 	if options.LinkerdVersion == "" {
 		var version string
 		var err error
@@ -135,6 +136,10 @@ func (options *ConformanceTestOptions) parseDefaultConfigValues() error {
 	if !options.Install.GlobalControlPlane.Enable && options.Install.GlobalControlPlane.Uninstall {
 		fmt.Println("globalControlPlane.uninstall will be ignored as globalControlPlane is disabled")
 		options.Install.GlobalControlPlane.Uninstall = false
+	}
+
+	if options.Install.GlobalControlPlane.Enable && options.Install.SkipTest {
+		return errors.New("Cannot skip install tests when install.globalControlPlane.enable is set to \"true\"")
 	}
 
 	return nil
