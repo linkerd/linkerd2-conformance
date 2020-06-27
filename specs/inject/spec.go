@@ -19,12 +19,14 @@ func RunInjectSpec() bool {
 				testInjectManual(false)
 			})
 
-			ginkgo.Context("with parameters", func() {
+			ginkgo.When("with parameters", func() {
 				testInjectManual(true)
 			})
 		})
 
 		ginkgo.It("can inject proxy container into pods", testProxyInjection)
+
+		ginkgo.It("can override pod level proxy config with namespace level config", testInjectAutoNsOverrideAnnotations)
 
 		if clean := utils.TestConfig.Inject.Clean; clean {
 			ginkgo.It("should delete all resources created during testing", testClean)

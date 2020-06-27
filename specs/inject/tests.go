@@ -8,10 +8,12 @@ import (
 	"github.com/linkerd/linkerd2/testutil"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 var (
-	proxyInjectTestNs string
+	proxyInjectTestNs           string
+	nsAnnotationsOverrideTestNs string
 )
 
 func testInjectManual(withParams bool) {
@@ -108,11 +110,72 @@ func testProxyInjection() {
 	gomega.Expect(proxyContainers).ShouldNot(gomega.BeNil(), fmt.Sprint("proxy container not injected"))
 }
 
+func testInjectAutoNsOverrideAnnotations() {
+
+	h := utils.TestHelper
+
+	ginkgo.By("Reading pod YAML")
+	injectYAML, err := testutil.ReadFile("testdata/inject/pod.yaml")
+
+	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
+
+	nsAnnotationsOverrideTestNs = "inj-ns-override-test"
+	deployName := "inject-test-terminus"
+	nsProxyMemReq := "50Mi"
+	nsProxyCPUReq := "200m"
+
+	nsAnnotations := map[string]string{
+		k8s.ProxyInjectAnnotation:        k8s.ProxyInjectEnabled,
+		k8s.ProxyCPURequestAnnotation:    nsProxyCPUReq,
+		k8s.ProxyMemoryRequestAnnotation: nsProxyMemReq,
+	}
+
+	ns := h.GetTestNamespace(nsAnnotationsOverrideTestNs)
+
+	ginkgo.By(fmt.Sprintf("Creating data plane namespace %s", proxyInjectTestNs))
+	err = h.CreateDataPlaneNamespaceIfNotExists(ns, nsAnnotations)
+
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create namespace %s: %s", nsAnnotationsOverrideTestNs, utils.Err(err)))
+
+	podProxyCPUReq := "600m"
+	podAnnotations := map[string]string{
+		k8s.ProxyCPURequestAnnotation: podProxyCPUReq,
+	}
+
+	ginkgo.By("Patching inject test YAML")
+	patchedYAML, err := testutil.PatchDeploy(injectYAML, deployName, podAnnotations)
+
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to patch inject test YAML in namespace %s for deploy/%s: %s", ns, deployName, utils.Err(err)))
+
+	ginkgo.By("Applyinh patched YAML to your cluster")
+	o, err := h.Kubectl(patchedYAML, "-n", ns, "create", "-f", "-")
+
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create deploy/%s in namespace %s for  %s: %s", deployName, ns, utils.Err(err), o))
+
+	ginkgo.By(fmt.Sprintf("Waiting for deploy/%s to be available", deployName))
+	o, err = h.Kubectl("", "--namespace", ns, "wait", "--for=condition=available", "--timeout=120s", "deploy/"+deployName)
+
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to wait for deploy/%s in namespace %s for  %s: %s", deployName, ns, utils.Err(err), o))
+
+	ginkgo.By(fmt.Sprintf("Getting pods for deploy/%s in namespace %s", deployName, ns))
+	pods, err := h.GetPodsForDeployment(ns, deployName)
+
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pods for namespace %s: %s", ns, utils.Err(err)))
+
+	containers := pods[0].Spec.Containers
+	proxyContainer := testutil.GetProxyContainer(containers)
+
+	ginkgo.By("Matching pod configuration with namespace level overrides")
+	gomega.Expect(proxyContainer.Resources.Requests["memory"]).Should(gomega.Equal(resource.MustParse(nsProxyMemReq)), "proxy memory resource request failed to match with namespace level override")
+	gomega.Expect(proxyContainer.Resources.Requests["cpu"]).Should(gomega.Equal(resource.MustParse(podProxyCPUReq)), "proxy cpu resource request failed to match with namespace level override")
+}
+
 func testClean() {
 	h := utils.TestHelper
 
 	namespaces := []string{
 		proxyInjectTestNs,
+		nsAnnotationsOverrideTestNs,
 	}
 
 	for _, ns := range namespaces {
