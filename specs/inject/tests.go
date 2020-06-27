@@ -115,11 +115,11 @@ func testInjectAutoNsOverrideAnnotations() {
 	h := utils.TestHelper
 
 	ginkgo.By("Reading pod YAML")
-	injectYAML, err := testutil.ReadFile("testdata/inject/pod.yaml")
+	injectYAML, err := testutil.ReadFile("testdata/inject/inject_test.yaml")
 
 	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
 
-	nsAnnotationsOverrideTestNs = "inj-ns-override-test"
+	injectNs := "inj-ns-override-test"
 	deployName := "inject-test-terminus"
 	nsProxyMemReq := "50Mi"
 	nsProxyCPUReq := "200m"
@@ -130,10 +130,10 @@ func testInjectAutoNsOverrideAnnotations() {
 		k8s.ProxyMemoryRequestAnnotation: nsProxyMemReq,
 	}
 
-	ns := h.GetTestNamespace(nsAnnotationsOverrideTestNs)
+	nsAnnotationsOverrideTestNs = h.GetTestNamespace(injectNs)
 
 	ginkgo.By(fmt.Sprintf("Creating data plane namespace %s", proxyInjectTestNs))
-	err = h.CreateDataPlaneNamespaceIfNotExists(ns, nsAnnotations)
+	err = h.CreateDataPlaneNamespaceIfNotExists(nsAnnotationsOverrideTestNs, nsAnnotations)
 
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create namespace %s: %s", nsAnnotationsOverrideTestNs, utils.Err(err)))
 
@@ -145,22 +145,22 @@ func testInjectAutoNsOverrideAnnotations() {
 	ginkgo.By("Patching inject test YAML")
 	patchedYAML, err := testutil.PatchDeploy(injectYAML, deployName, podAnnotations)
 
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to patch inject test YAML in namespace %s for deploy/%s: %s", ns, deployName, utils.Err(err)))
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to patch inject test YAML in namespace %s for deploy/%s: %s", nsAnnotationsOverrideTestNs, deployName, utils.Err(err)))
 
-	ginkgo.By("Applyinh patched YAML to your cluster")
-	o, err := h.Kubectl(patchedYAML, "-n", ns, "create", "-f", "-")
+	ginkgo.By("Applying patched YAML to your cluster")
+	o, err := h.Kubectl(patchedYAML, "-n", nsAnnotationsOverrideTestNs, "create", "-f", "-")
 
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create deploy/%s in namespace %s for  %s: %s", deployName, ns, utils.Err(err), o))
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create deploy/%s in namespace %s for  %s: %s", deployName, nsAnnotationsOverrideTestNs, utils.Err(err), o))
 
 	ginkgo.By(fmt.Sprintf("Waiting for deploy/%s to be available", deployName))
-	o, err = h.Kubectl("", "--namespace", ns, "wait", "--for=condition=available", "--timeout=120s", "deploy/"+deployName)
+	o, err = h.Kubectl("", "--namespace", nsAnnotationsOverrideTestNs, "wait", "--for=condition=available", "--timeout=120s", "deploy/"+deployName)
 
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to wait for deploy/%s in namespace %s for  %s: %s", deployName, ns, utils.Err(err), o))
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to wait for deploy/%s in namespace %s for  %s: %s", deployName, nsAnnotationsOverrideTestNs, utils.Err(err), o))
 
-	ginkgo.By(fmt.Sprintf("Getting pods for deploy/%s in namespace %s", deployName, ns))
-	pods, err := h.GetPodsForDeployment(ns, deployName)
+	ginkgo.By(fmt.Sprintf("Getting pods for deploy/%s in namespace %s", deployName, nsAnnotationsOverrideTestNs))
+	pods, err := h.GetPodsForDeployment(nsAnnotationsOverrideTestNs, deployName)
 
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pods for namespace %s: %s", ns, utils.Err(err)))
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pods for namespace %s: %s", nsAnnotationsOverrideTestNs, utils.Err(err)))
 
 	containers := pods[0].Spec.Containers
 	proxyContainer := testutil.GetProxyContainer(containers)
@@ -187,10 +187,10 @@ func testClean() {
 		ginkgo.By(fmt.Sprintf("Deleting resources in namespace/%s", ns))
 		_, err = h.Kubectl(out, "delete", "-f", "-")
 
-		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not delete resources in namespace/%s: ", ns, utils.Err(err)))
+		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not delete resources in namespace/%s: %s", ns, utils.Err(err)))
 
 		_, err = h.Kubectl("", "delete", "ns", ns)
 
-		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not delete namespace %s: ", ns, utils.Err(err)))
+		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not delete namespace %s: %s", ns, utils.Err(err)))
 	}
 }
