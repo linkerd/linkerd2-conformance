@@ -139,3 +139,8 @@ func Err(err error) string {
 	}
 	return ""
 }
+
+// GetGetHelperAndConfig returns a reference of the initialized TestHelper and TestConfig
+func GetHelperAndConfig() (*testutil.TestHelper, *ConformanceTestOptions) {
+	return TestHelper, TestConfig
+}

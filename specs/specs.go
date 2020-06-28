@@ -16,24 +16,23 @@ import (
 // Describe block before running the primary tests
 // This is done so that the BeforeEach and AfterEach
 // blocks do not interfere with these tests
-func runPreFlightSpecs(globalControlPlane, skip bool) bool {
+func runPreFlightSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
 	return ginkgo.Describe("", func() {
-		if !globalControlPlane && skip {
+		if !c.GlobalControlPlane() && c.SkipInstall() {
 			ginkgo.Skip("Skipping `linkerd install` spec")
 		}
 		_ = install.RunInstallSpec()
-		if !globalControlPlane { // Immediately uninstall if each test shall have its own control-plane
+		if !c.GlobalControlPlane() { // Immediately uninstall if each test shall have its own control-plane
 			_ = uninstall.RunUninstallSpec()
 		}
 	})
 }
 
-func runMainSpecs(globalControlPlane, removeCP, ha bool, h *testutil.TestHelper) bool {
+func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
 	return ginkgo.Describe("", func() {
-
-		if !globalControlPlane {
+		if !c.GlobalControlPlane() {
 			_ = ginkgo.BeforeEach(func() {
-				utils.InstallLinkerdControlPlane(h, ha)
+				utils.InstallLinkerdControlPlane(h, c.HA())
 			})
 
 			_ = ginkgo.AfterEach(func() {
@@ -46,7 +45,7 @@ func runMainSpecs(globalControlPlane, removeCP, ha bool, h *testutil.TestHelper)
 		_ = inject.RunInjectSpec()
 
 		// global uninstall (if true) should always run at the end
-		if globalControlPlane && removeCP {
+		if c.GlobalControlPlane() && h.Uninstall() {
 			_ = uninstall.RunUninstallSpec()
 		}
 	})
@@ -55,20 +54,15 @@ func runMainSpecs(globalControlPlane, removeCP, ha bool, h *testutil.TestHelper)
 // RunAllSpecs wraps all the specs into a single runnable test
 func RunAllSpecs(t *testing.T) {
 
-	h := utils.TestHelper
-	c := utils.TestConfig
-
-	globalControlPlane := c.GlobalControlPlane()
-	removeCP := h.Uninstall()
-	ha := c.HA()
+	h, c := utils.GetHelperAndConfig()
 
 	// A single top-level wrapper Describe is required to prevent
 	// the specs from being run in a random order
 	// The Describe message is intentionally left empty
 	// as it only serves to prevent randomization of specs
 	_ = ginkgo.Describe("", func() {
-		_ = runPreFlightSpecs(globalControlPlane, c.Install.SkipTest)
-		_ = runMainSpecs(globalControlPlane, removeCP, ha, h)
+		_ = runPreFlightSpecs(h, c)
+		_ = runMainSpecs(h, c)
 	})
 
 	gomega.RegisterFailHandler(ginkgo.Fail)

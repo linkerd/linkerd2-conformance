@@ -7,7 +7,7 @@ import (
 
 func RunCheckSpec(pre bool) bool {
 	return ginkgo.Describe("`linkerd check`", func() {
-		h := utils.TestHelper
+		h, _ := utils.GetHelperAndConfig()
 		if pre {
 			ginkgo.It("can successfully run all pre-installation checks", func() {
 				utils.RunCheck(h, true)

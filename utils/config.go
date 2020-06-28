@@ -133,17 +133,17 @@ func (options *ConformanceTestOptions) parse() error {
 		options.LinkerdBinaryPath = path
 	}
 
-	if !options.Install.GlobalControlPlane.Enable && options.Install.GlobalControlPlane.Uninstall {
+	if !options.GlobalControlPlane() && options.Install.GlobalControlPlane.Uninstall {
 		fmt.Println("'globalControlPlane.uninstall' will be ignored as globalControlPlane is disabled")
 		options.Install.GlobalControlPlane.Uninstall = false
 	}
 
-	if options.Install.GlobalControlPlane.Enable && options.Install.SkipTest {
+	if options.GlobalControlPlane() && options.Install.SkipTest {
 		return errors.New("Cannot skip install tests when 'install.globalControlPlane.enable' is set to \"true\"")
 	}
 
-	if options.Install.UpgradeFromVersion != "" && options.Install.SkipTest {
-		return errors.New("Cannot skip install tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
+	if options.Install.UpgradeFromVersion != "" && options.SkipInstall() {
+		return errors.New("cannot skip install tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
 	}
 	return nil
 }
@@ -194,4 +194,19 @@ func (options *ConformanceTestOptions) GlobalControlPlane() bool {
 // HA determines if a high-availability control-plane must be used
 func (options *ConformanceTestOptions) HA() bool {
 	return options.Install.HA
+}
+
+// SkipInstall determines if install tests must be skipped
+func (options *ConformanceTestOptions) SkipInstall() bool {
+	return options.Install.SkipTest
+}
+
+// CleanInject determines if resources created during inject test must be removed
+func (options *ConformanceTestOptions) CleanInject() bool {
+	return options.Inject.Clean
+}
+
+// SkipInject determines if inject test must be skipped
+func (options *ConformanceTestOptions) SkipInject() bool {
+	return options.Inject.SkipTest
 }

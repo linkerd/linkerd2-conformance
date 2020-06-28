@@ -19,7 +19,8 @@ var (
 func testInjectManual(withParams bool) {
 	var golden string
 
-	testHelper := utils.TestHelper
+	h, _ := utils.GetHelperAndConfig()
+
 	injectYAMLPath := "testdata/inject/inject_test.yaml"
 	cmd := []string{"inject",
 		"--manual",
@@ -60,17 +61,17 @@ func testInjectManual(withParams bool) {
 	cmd = append(cmd, injectYAMLPath)
 
 	ginkgo.By(fmt.Sprintf("Running `linkerd inject` against %s", injectYAMLPath))
-	out, stderr, err := testHelper.LinkerdRun(cmd...)
+	out, stderr, err := h.LinkerdRun(cmd...)
 
 	gomega.Expect(err).Should(gomega.BeNil(), stderr)
 
 	ginkgo.By("Validating injected output")
-	err = testutil.ValidateInject(out, golden, testHelper)
+	err = testutil.ValidateInject(out, golden, h)
 	gomega.Expect(err).To(gomega.BeNil())
 }
 
 func testProxyInjection() {
-	h := utils.TestHelper
+	h, _ := utils.GetHelperAndConfig()
 
 	ginkgo.By("Reading pod YAML")
 	podYAML, err := testutil.ReadFile("testdata/inject/pod.yaml")
@@ -112,7 +113,7 @@ func testProxyInjection() {
 
 func testInjectAutoNsOverrideAnnotations() {
 
-	h := utils.TestHelper
+	h, _ := utils.GetHelperAndConfig()
 
 	ginkgo.By("Reading pod YAML")
 	injectYAML, err := testutil.ReadFile("testdata/inject/inject_test.yaml")
@@ -171,7 +172,7 @@ func testInjectAutoNsOverrideAnnotations() {
 }
 
 func testClean() {
-	h := utils.TestHelper
+	h, _ := utils.GetHelperAndConfig()
 
 	namespaces := []string{
 		proxyInjectTestNs,
