@@ -34,23 +34,23 @@ type GlobalControlPlane struct {
 }
 
 type Install struct {
-	SkipTest           bool `yaml:"skipTest,omitempty"`
-	HA                 bool `yaml:"ha,omitempty"`
-	GlobalControlPlane `yaml:"globalControlPlane,omitempty"`
+	SkipTest           bool                   `yaml:"skipTest,omitempty"`
+	HA                 bool                   `yaml:"ha,omitempty"`
+	UpgradeFromVersion string                 `yaml:"upgradeFromVersion,omitempty"`
 	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
+	GlobalControlPlane `yaml:"globalControlPlane,omitempty"`
 }
 
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
-	LinkerdVersion     string `yaml:"linkerdVersion,omitempty"`
-	LinkerdNamespace   string `yaml:"linkerdNamespace,omitempty"`
-	LinkerdBinaryPath  string `yaml:"linkerdPath,omitempty"`
-	UpgradeFromVersion string `yaml:"upgradeFromVersion,omitempty"`
-	ClusterDomain      string `yaml:"clusterDomain,omitempty"`
-	K8sContext         string `yaml:"k8sContext,omitempty"`
-	ExternalIssuer     bool   `yaml:"externalIssuer,omitempty"`
-	Install            `yaml:"install"`
-	Inject             `yaml:"inject"`
+	LinkerdVersion    string `yaml:"linkerdVersion,omitempty"`
+	LinkerdNamespace  string `yaml:"linkerdNamespace,omitempty"`
+	LinkerdBinaryPath string `yaml:"linkerdPath,omitempty"`
+	ClusterDomain     string `yaml:"clusterDomain,omitempty"`
+	K8sContext        string `yaml:"k8sContext,omitempty"`
+	ExternalIssuer    bool   `yaml:"externalIssuer,omitempty"`
+	Install           `yaml:"install"`
+	Inject            `yaml:"inject"`
 
 	// TODO: Add fields for test specific configurations
 	// TODO: Add fields for Helm tests
@@ -162,7 +162,7 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		options.LinkerdBinaryPath,
 		options.LinkerdVersion,
 		options.LinkerdNamespace,
-		options.UpgradeFromVersion,
+		options.Install.UpgradeFromVersion,
 		options.ClusterDomain,
 		helmPath,
 		helmChart,

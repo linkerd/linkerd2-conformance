@@ -52,10 +52,6 @@ func InitTestHelper() error {
 		return err
 	}
 
-	if err = installLinkerdIfNotExists(TestConfig.LinkerdBinaryPath, TestConfig.LinkerdVersion); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -98,8 +94,9 @@ func makeScriptFile(script []byte, path string) error {
 	return nil
 }
 
-func installLinkerdIfNotExists(linkerd, version string) error {
-	if fileExists(linkerd) {
+// InstallLinkerdBinary installs a linkerd2 binary of the given version
+func InstallLinkerdBinary(linkerd, version string, force bool) error {
+	if fileExists(linkerd) && !force {
 		fmt.Printf("linkerd2 binary exists in \"%s\"- skipping installation\n", linkerd)
 		return nil
 	}

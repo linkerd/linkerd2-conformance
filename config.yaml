@@ -2,7 +2,7 @@ linkerdVersion: stable-2.8.0
 externalIssuer: false
 install:
     skipTest: false
-    ha: false 
+    ha: false
     addOns:
         tracing:
             enabled: true
