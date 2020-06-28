@@ -17,15 +17,20 @@ func TestMain(m *testing.M) {
 
 	}
 
-	h, _ := utils.GetHelperAndConfig()
+	h, c := utils.GetHelperAndConfig()
 
-	if h.UpgradeFromVersion() == "" { // directly install Linkerd binary if upgrade tests are not going to run
-		if err := utils.InstallLinkerdBinary(utils.TestConfig.LinkerdBinaryPath, h.GetVersion(), false); err != nil {
-			fmt.Printf("error installing linkerd2 (%s): %s", h.GetVersion(), err.Error())
-			os.Exit(1)
-		}
+	// install linkerd binary
 
+	version := h.UpgradeFromVersion()
+	if version == "" {
+		version = h.GetVersion()
 	}
+
+	if err := utils.InstallLinkerdBinary(c.GetLinkerdPath(), version, false, true); err != nil {
+		fmt.Printf("error installing linkerd2 (%s): %s", version, err.Error())
+		os.Exit(1)
+	}
+
 	code := m.Run()
 	os.Exit(code)
 }

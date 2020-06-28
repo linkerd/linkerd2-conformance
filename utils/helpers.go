@@ -23,7 +23,7 @@ const (
 	installEnv           = "LINKERD2_VERSION"
 	configFile           = "config.yaml"
 	linkerdInstallScript = "install.sh"
-	installScriptURL     = "https://raw.githubusercontent.com/linkerd/website/master/run.linkerd.io/public/install"
+	installScriptURL     = "https://run.linkerd.io/install"
 )
 
 // InitTestHelper initializes a test helper
@@ -95,7 +95,7 @@ func makeScriptFile(script []byte, path string) error {
 }
 
 // InstallLinkerdBinary installs a linkerd2 binary of the given version
-func InstallLinkerdBinary(linkerd, version string, force bool) error {
+func InstallLinkerdBinary(linkerd, version string, force bool, verbose bool) error {
 	if fileExists(linkerd) && !force {
 		fmt.Printf("linkerd2 binary exists in \"%s\"- skipping installation\n", linkerd)
 		return nil
@@ -113,8 +113,11 @@ func InstallLinkerdBinary(linkerd, version string, force bool) error {
 	os.Setenv(installEnv, version)
 
 	cmd := exec.Command("/bin/sh", linkerdInstallScript)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+
+	if verbose {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
 	if err := cmd.Run(); err != nil {
 		return err

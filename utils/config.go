@@ -186,6 +186,11 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 	return helper, nil
 }
 
+// GetLinkerdPath returns the path where Linkerd binary will be installed
+func (options *ConformanceTestOptions) GetLinkerdPath() string {
+	return options.LinkerdBinaryPath
+}
+
 // GlobalControlPlane determines if a single contGlobalControlPlane must be used for testing
 func (options *ConformanceTestOptions) GlobalControlPlane() bool {
 	return options.Install.GlobalControlPlane.Enable
