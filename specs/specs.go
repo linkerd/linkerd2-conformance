@@ -34,7 +34,7 @@ func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool 
 	return ginkgo.Describe("", func() {
 		if !c.GlobalControlPlane() {
 			_ = ginkgo.BeforeEach(func() {
-				utils.InstallLinkerdControlPlane(h, c.HA())
+				utils.InstallLinkerdControlPlane(h, c)
 			})
 
 			_ = ginkgo.AfterEach(func() {

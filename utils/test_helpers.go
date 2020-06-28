@@ -60,7 +60,9 @@ func RunCheck(h *testutil.TestHelper, pre bool) {
 	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), fmt.Sprintf("`linkerd check failed: %s`\n Check errors: %s", Err(err), getFailedChecks(checkResult)))
 }
 
-func InstallLinkerdControlPlane(h *testutil.TestHelper, withHA bool) {
+func InstallLinkerdControlPlane(h *testutil.TestHelper, c *ConformanceTestOptions) {
+	withHA := c.HA()
+
 	ginkgo.By(fmt.Sprintf("Installing linkerd control plane with HA: %v", withHA))
 	RunCheck(h, true) // run pre checks
 
@@ -73,10 +75,27 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper, withHA bool) {
 	// gomega.Expect(h.GetHelmReleaseName()).To(gomega.Equal(""))
 
 	cmd := "install"
-	args := []string{
-		"--controller-log-level", "debug",
-		"--proxy-log-level", "warn,linkerd2_proxy=debug",
-		"--proxy-version", h.GetVersion(),
+	args := []string{}
+
+	// parse install flags from config
+	for _, flag := range c.GetInstallFlags() {
+		args = append(args, flag)
+	}
+
+	if len(c.GetAddons()) > 0 {
+
+		addOnFile := "addons.yaml"
+		if !fileExists(addOnFile) {
+			out, err := c.GetAddOnsYAML()
+			gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to produce add-on config file: %s", Err(err)))
+
+			err = createFileWithContent(out, addOnFile)
+			gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to write add-ons to YAML: %s", Err(err)))
+		}
+
+		ginkgo.By(fmt.Sprintf("Using add-ons file %s", addOnFile))
+		args = append(args, "--addon-config")
+		args = append(args, addOnFile)
 	}
 
 	if withHA {

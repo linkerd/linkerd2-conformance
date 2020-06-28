@@ -11,7 +11,7 @@ func RunInstallSpec() bool {
 		h, c := utils.GetHelperAndConfig()
 
 		ginkgo.It("can install a new control plane", func() {
-			utils.InstallLinkerdControlPlane(h, c.HA())
+			utils.InstallLinkerdControlPlane(h, c)
 		})
 	})
 }

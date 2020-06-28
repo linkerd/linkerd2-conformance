@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/linkerd/linkerd2/testutil"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -37,6 +38,7 @@ type Install struct {
 	SkipTest           bool                   `yaml:"skipTest,omitempty"`
 	HA                 bool                   `yaml:"ha,omitempty"`
 	UpgradeFromVersion string                 `yaml:"upgradeFromVersion,omitempty"`
+	Flags              []string               `yaml:"flags,omitempty"`
 	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
 	GlobalControlPlane `yaml:"globalControlPlane,omitempty"`
 }
@@ -214,4 +216,19 @@ func (options *ConformanceTestOptions) CleanInject() bool {
 // SkipInject determines if inject test must be skipped
 func (options *ConformanceTestOptions) SkipInject() bool {
 	return options.Inject.SkipTest
+}
+
+// GetAddons returns the add-on config
+func (options *ConformanceTestOptions) GetAddons() map[string]interface{} {
+	return options.Install.AddOns
+}
+
+// GetAddOnsYAML marshals the add-on config to a YAML and returns the byte slice and error
+func (options *ConformanceTestOptions) GetAddOnsYAML() (out []byte, err error) {
+	return yaml.Marshal(options.GetAddons())
+}
+
+// GetInstallFlags returns the flags set by the user for running `linkerd install`
+func (options *ConformanceTestOptions) GetInstallFlags() []string {
+	return options.Install.Flags
 }

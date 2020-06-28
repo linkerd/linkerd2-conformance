@@ -84,11 +84,11 @@ func fetchInstallScript() ([]byte, error) {
 	return body, nil
 }
 
-func makeScriptFile(script []byte, path string) error {
+func createFileWithContent(data []byte, path string) error {
 	file, err := os.Create(path)
 	defer file.Close()
 
-	if _, err = file.Write(script); err != nil {
+	if _, err = file.Write(data); err != nil {
 		return err
 	}
 	return nil
@@ -106,7 +106,7 @@ func InstallLinkerdBinary(linkerd, version string, force bool, verbose bool) err
 		return err
 	}
 
-	if err = makeScriptFile(script, linkerdInstallScript); err != nil {
+	if err = createFileWithContent(script, linkerdInstallScript); err != nil {
 		return err
 	}
 
