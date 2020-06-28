@@ -1,8 +1,9 @@
-linkerdVersion: stable-2.8.0
+linkerdVersion: stable-2.8.1
 externalIssuer: false
 install:
     skipTest: false
     ha: false
+    upgradeFromVersion: stable-2.7.0
     addOns:
         tracing:
             enabled: true

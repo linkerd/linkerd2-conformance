@@ -41,8 +41,6 @@ func RunCheck(h *testutil.TestHelper, pre bool) {
 
 	cmd := []string{
 		"check",
-		"--expected-version",
-		h.GetVersion(),
 		"-o",
 		"json",
 	}
@@ -54,14 +52,12 @@ func RunCheck(h *testutil.TestHelper, pre bool) {
 		ginkgo.By("Running post-installation checks")
 	}
 
-	out, stderr, err := h.LinkerdRun(cmd...)
-	gomega.Expect(err).Should(gomega.BeNil(), stderr)
+	out, _, _ := h.LinkerdRun(cmd...)
 
 	ginkgo.By("Validating `check` output")
-	err = json.Unmarshal([]byte(out), &checkResult)
-	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
-
-	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), getFailedChecks(checkResult))
+	err := json.Unmarshal([]byte(out), &checkResult)
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to unmarshal check results JSON: %s", Err(err)))
+	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), fmt.Sprintf("`linkerd check failed: %s`\n Check errors: %s", Err(err), getFailedChecks(checkResult)))
 }
 
 func InstallLinkerdControlPlane(h *testutil.TestHelper, withHA bool) {
@@ -100,6 +96,8 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper, withHA bool) {
 	ginkgo.By("Applying control plane manifests")
 	out, err = h.KubectlApply(out, "")
 	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
+
+	// TODO: Once https://github.com/linkerd/linkerd2/pull/4681 is merged, check the state of control plane deployments
 
 	RunCheck(h, false) // run post checks
 }

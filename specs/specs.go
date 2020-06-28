@@ -6,6 +6,7 @@ import (
 	"github.com/linkerd/linkerd2-conformance/specs/inject"
 	"github.com/linkerd/linkerd2-conformance/specs/install"
 	"github.com/linkerd/linkerd2-conformance/specs/uninstall"
+	"github.com/linkerd/linkerd2-conformance/specs/upgrade"
 	"github.com/linkerd/linkerd2-conformance/utils"
 	"github.com/linkerd/linkerd2/testutil"
 	"github.com/onsi/ginkgo"
@@ -22,6 +23,7 @@ func runPreFlightSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) 
 			ginkgo.Skip("Skipping `linkerd install` spec")
 		}
 		_ = install.RunInstallSpec()
+		_ = upgrade.RunUpgradeSpec()
 		if !c.GlobalControlPlane() { // Immediately uninstall if each test shall have its own control-plane
 			_ = uninstall.RunUninstallSpec()
 		}
