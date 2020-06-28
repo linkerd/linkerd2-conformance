@@ -134,14 +134,17 @@ func (options *ConformanceTestOptions) parse() error {
 	}
 
 	if !options.Install.GlobalControlPlane.Enable && options.Install.GlobalControlPlane.Uninstall {
-		fmt.Println("globalControlPlane.uninstall will be ignored as globalControlPlane is disabled")
+		fmt.Println("'globalControlPlane.uninstall' will be ignored as globalControlPlane is disabled")
 		options.Install.GlobalControlPlane.Uninstall = false
 	}
 
 	if options.Install.GlobalControlPlane.Enable && options.Install.SkipTest {
-		return errors.New("Cannot skip install tests when install.globalControlPlane.enable is set to \"true\"")
+		return errors.New("Cannot skip install tests when 'install.globalControlPlane.enable' is set to \"true\"")
 	}
 
+	if options.Install.UpgradeFromVersion != "" && options.Install.SkipTest {
+		return errors.New("Cannot skip install tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
+	}
 	return nil
 }
 
