@@ -21,8 +21,6 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 
 ### Repository Structure
 
-This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to structure tests and write assertions. This repository provides a single test suite that runs each feature test as a single spec, rather than having a separate test suite (`*_test.go`) for each of the features. This was done for the sake of simplicity and to have greater control over the order in which the tests are run.
-
 - [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
 - [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
@@ -136,6 +134,104 @@ $ bin/go-test -ginkgo.v
 ```
 
 Additionally, as this project uses [Ginkgo](https://github.com/onsi/ginkgo) for the tests, you may also pass flags options from the [Ginkgo CLI](https://onsi.github.io/ginkgo/#the-ginkgo-cli).
+
+## Adding new tests
+
+This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to describe tests and write assertions. 
+
+Rather than having a separate test suite for each feature (and its associated `_test.go` files), this project provides a single test suite that runs tests for each of the features in the form of a [spec](https://onsi.github.io/ginkgo/#adding-specs-to-a-suite). This was done to have greater control over the order in which the tests are run, while having the flexibility to use a YAML configuration file. Hence, the below workflow must be followed while adding a new test to this project.
+
+For the sake of understanding, we shall assume a feature called `l5dFeature`, for which we shall add a new test
+
+### 1. Bootstrapping
+   
+To add a new test for `l5Feature`, we first add a new package `l5dFeature` under the `specs` folder.
+
+```bash
+$ mkdir specs/l5dFeature
+```
+
+Our new package shall mainly require 2 new files
+
+- `spec.go` - this file holds the description and structure of the test in the form of [`Describe`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [`It`](https://onsi.github.io/ginkgo/#individual-specs-it), [`Context`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [etc.](https://onsi.github.io/ginkgo/#structuring-your-specs) blocks.
+- `tests.go` - this file shall contain assertions and testing logic for each of our specs as described in `specs.go`
+
+```bash
+$ touch specs/l5dFeature/tests.go
+$ touch specs/l5dFeature/spec.go
+```
+
+### 2. Writing the tests
+   
+`spec.go` must contain a single exported function that returns a `ginkgo.Describe` block that holds the structure of our tests. This function must be named `Runl5dFeatureSpec`.   
+
+For example
+
+```go
+// spec.go
+
+package l5dFeature
+
+import (
+	"github.com/onsi/ginkgo"
+)
+
+func Runl5dFeatureSpec() bool {
+  return ginkgo.Describe("l5d Feature", func() {
+    ginkgo.It("can do something cool", testDoSomethingCool)
+    ginkgo.It("can do something cooler", testDoSomethingCooler)
+
+    ginkgo.It("should throw error", func() {
+      ginkgo.When("this is unspecified", testThrowErrorUnspecified)
+      ginkgo.When("something breaks", testThrowErrorWhenBroken)
+    })
+  })
+}
+```
+`tests.go` must contain the functions that do the actual testing and assertions, which are used as callbacks as shown above.
+
+For example
+
+```go
+// tests.go
+
+package l5dFeature
+
+import (
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
+)
+
+func testSomethingCool() {
+  // ...add testing logic here
+
+  err := doSomethingCool()
+
+  // sample assertion
+  gomega.Expect(err).Should(gomega.BeNil(), "could not do something cool")
+}
+```
+
+### 3. Wiring up the newly added test
+
+Once the tests have been added, the newly written `Runl5dFeatureSpec` must be brought to scope under the `specs` package. To do so, simply import the `l5dFeature` package under `specs/specs.go`, and call `Runl5dFeatureSpec` in the function body of `runMainSpecs` (or `runPreFlightSpecs` depending on what is being tested).
+
+For example
+
+```go
+func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
+	return ginkgo.Describe("", func() {
+    // ...test initialisation logic here
+
+		// Bring main tests into scope
+    _ = inject.RunInjectSpec()
+    _ = l5dFeature.Runl5dFeatureSpec() // call your test here
+
+		// ...post testing logic here
+	})
+}
+
+```
 
 <!-- refs -->
 [logo]: https://user-images.githubusercontent.com/9226/33582867-3e646e02-d90c-11e7-85a2-2e238737e859.png
