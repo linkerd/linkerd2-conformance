@@ -44,16 +44,16 @@ This section describes the various configuration options and its default values.
 
 | Option | Description | Default value |
 |-|-|-|
-| linkerdVersion | The linkerd2 binary version to use | Latest stable release |
-| install.skipTest | Skip the pre-flight control plane installation tests | false |
-| install.upgradeFromVersion | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | "" |
-| install.ha | Use a high-availability control plane for the tests | false |
-| install.flags | Use the specified `linkerd install` CLI flag options while testing control plane installation | [] |
-| install.addOns | Use the specified add-on configuration while testing control plane installation | empty |
-| install.globalControlPlane.enable | Install and test the control plane once and use it  throughout the testing process | false |
-| install.globalControlPlane.uninstall | If using a global control plane, uninstall once the tests complete (whether they pass or fail) | false |
-| inject.skipTest | Skip proxy injection tests | false |
-| inject.clean | Delete the resources created for testing proxy injection | false |
+| `linkerdVersion` | The linkerd2 binary version to use | Latest stable release |
+| `install.skipTest` | Skip the pre-flight control plane installation tests | false |
+| `install.upgradeFromVersion` | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | "" |
+| `install.ha` | Use a high-availability control plane for the tests | false |
+| `install.flags` | Use the specified `linkerd install` CLI flag options while testing control plane installation | [] |
+| `install.addOns` | Use the specified add-on configuration while testing control plane installation | empty |
+| `install.globalControlPlane.enable` | Install and test the control plane once and use it  throughout the testing process | false |
+| `install.globalControlPlane.uninstall` | If using a global control plane, uninstall once the tests complete (whether they pass or fail) | false |
+| `inject.skipTest` | Skip proxy injection tests | false |
+| `inject.clean` | Delete the resources created for testing proxy injection | false |
 
 
 
