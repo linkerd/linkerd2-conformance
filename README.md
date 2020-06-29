@@ -18,6 +18,17 @@ _...and a lot more to come_
 
 The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](https://www.cncf.io/)).
 
+
+### Repository Structure
+
+This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to structure tests and write assertions. This repository provides a single test suite that runs each feature test as a single spec, rather than having a separate test suite (`*_test.go`) for each of the features. This was done for the sake of simplicity and to have greater control over the order in which the tests are run.
+
+- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
+- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
+- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
+- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests 
+
+
 ## Usage
 
 This section outlines the various methods that can be used to run the conformance tests against your [Kubernetes](https://kubernetes.io/) cluster
