@@ -18,16 +18,9 @@ _...and a lot more to come_
 
 The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](https://www.cncf.io/)).
 
-
-### Repository Structure
-
-- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
-- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
-- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
-- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests
-
 ## Table of Contents
 
+- [Repository Structure](https://github.com/mayankshah1607/linkerd2-conformance#repository-structure)
 - [Configuring your tests](https://github.com/mayankshah1607/linkerd2-conformance#configuring-your-tests)
   - [Configuration Options](https://github.com/mayankshah1607/linkerd2-conformance#configuration-options)
 - [Usage](https://github.com/mayankshah1607/linkerd2-conformance#usage)
@@ -39,7 +32,12 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
   - [Writing the tests](https://github.com/mayankshah1607/linkerd2-conformance#2-writing-the-tests)
   - [Wiring up the tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-the-newly-added-test)
 
+## Repository Structure
 
+- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
+- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
+- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
+- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests
 
 ## Configuring your tests
 
