@@ -28,24 +28,38 @@ This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
 - [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests 
 
+## Configuring your tests
 
-## Usage
+The conformance tests can be easily configured by specifying a `config.yaml` that holds the configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
 
-This section outlines the various methods that can be used to run the conformance tests against your [Kubernetes](https://kubernetes.io/) cluster
-
-### Configuring the tests
-
-The conformance tests can easily be configured by specifying a `config.yaml` that holds the configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
-
-Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your requirements.
+Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your requirements. The tests shall read this YAML file during runtime and run accordingly.
 
 ```bash
 $ curl -sL https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml > config.yaml
 ```
 
-This YAML file shall be used while running the tests.
+### Configuration options
 
-> Note: Not providing a configuration file will cause the tests to run on default settings
+This section describes the various configuration options and its default values. Not providing a configuration file, or providing a partial configuration file will result in the tests running on default settings as described below
+
+| Option | Description | Default value |
+|-|-|-|
+| linkerdVersion | The linkerd2 binary version to use | Latest stable release |
+| install.skipTest | Skip the pre-flight control plane installation tests | false |
+| install.upgradeFromVersion | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | "" |
+| install.ha | Use a high-availability control plane for the tests | false |
+| install.flags | Use the specified `linkerd install` CLI flag options while testing control plane installation | [] |
+| install.addOns | Use the specified add-on configuration while testing control plane installation | empty |
+| install.globalControlPlane.enable | Install and test the control plane once and use it  throughout the testing process | false |
+| install.globalControlPlane.uninstall | If using a global control plane, uninstall once the tests complete (whether they pass or fail) | false |
+| inject.skipTest | Skip proxy injection tests | false |
+| inject.clean | Delete the resources created for testing proxy injection | false |
+
+
+
+## Usage
+
+This section outlines the various methods that can be used to run the conformance tests against your [Kubernetes](https://kubernetes.io/) cluster
 
 ### Using the Sonobuoy CLI
 
