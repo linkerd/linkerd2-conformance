@@ -24,7 +24,22 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 - [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
 - [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
-- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests 
+- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests
+
+## Table of Contents
+
+- [Configuring your tests](https://github.com/mayankshah1607/linkerd2-conformance#configuring-your-tests)
+  - [Configuration Options](https://github.com/mayankshah1607/linkerd2-conformance#configuration-options)
+- [Usage](https://github.com/mayankshah1607/linkerd2-conformance#usage)
+  - [Using the Sonobuoy CLI](https://github.com/mayankshah1607/linkerd2-conformance#using-the-sonobuoy-cli)
+  - [Running the tests using Docker]()
+  - [Running the tests locally](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally)
+- [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
+  - [Bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-bootstrapping)
+  - [Writing the tests](https://github.com/mayankshah1607/linkerd2-conformance#2-writing-the-tests)
+  - [Wiring up the tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-the-newly-added-test)
+
+
 
 ## Configuring your tests
 
@@ -147,7 +162,7 @@ Rather than having a separate test suite for each feature (and its associated `_
 
 For the sake of understanding, we shall assume a feature called `l5dFeature`, for which we shall add a new test
 
-### 1. Bootstrapping
+#### 1. Bootstrapping
    
 To add a new test for `l5Feature`, we first add a new package `l5dFeature` under the `specs` folder.
 
@@ -165,7 +180,7 @@ $ touch specs/l5dFeature/tests.go
 $ touch specs/l5dFeature/spec.go
 ```
 
-### 2. Writing the tests
+#### 2. Writing the tests
    
 `spec.go` must contain a single exported function that returns a `ginkgo.Describe` block that holds the structure of our tests. This function must be named `Runl5dFeatureSpec`.   
 
@@ -216,7 +231,7 @@ func testSomethingCool() {
 }
 ```
 
-### 3. Wiring up the newly added test
+#### 3. Wiring up the newly added test
 
 Once the tests have been added, the newly written `Runl5dFeatureSpec` must be brought to scope under the `specs` package. To do so, simply import the `l5dFeature` package under `specs/specs.go`, and call `Runl5dFeatureSpec` in the function body of `runMainSpecs` (or `runPreFlightSpecs` depending on what is being tested).
 
