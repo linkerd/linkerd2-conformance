@@ -10,9 +10,11 @@ func RunUpgradeSpec() bool {
 	return ginkgo.Describe("`linkerd upgrade`", func() {
 		h, _ := utils.GetHelperAndConfig()
 
-		if h.UpgradeFromVersion() == "" {
-			ginkgo.Skip("Skipping upgrade tests")
-		}
+		ginkgo.BeforeEach(func() {
+			if h.UpgradeFromVersion() == "" {
+				ginkgo.Skip("Skipping upgrade tests")
+			}
+		})
 
 		ginkgo.It("can upgrade CLI", testUpgradeCLI)
 		ginkgo.It("can upgrade control-plane", testUpgrade)

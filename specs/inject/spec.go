@@ -12,9 +12,12 @@ func RunInjectSpec() bool {
 	return ginkgo.Describe("`linkerd inject`", func() {
 		_, c := utils.GetHelperAndConfig()
 
-		if skip := c.SkipInject(); skip {
-			ginkgo.Skip(fmt.Sprintf("Skipping inject tests: inject.skil set to \"%v\" in config YAML", skip))
-		}
+		ginkgo.BeforeEach(func() {
+			if skip := c.SkipInject(); skip {
+				ginkgo.Skip(fmt.Sprintf("Skipping inject tests: inject.skil set to \"%v\" in config YAML", skip))
+			}
+		})
+
 		ginkgo.It("can perform manual injection", func() {
 
 			ginkgo.When("without parameters", func() {
