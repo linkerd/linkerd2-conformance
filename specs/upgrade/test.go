@@ -41,7 +41,6 @@ func testUpgrade() {
 
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to apply manifests: %s", utils.Err(err)))
 
-	// TODO: Once https://github.com/linkerd/linkerd2/pull/4681 is merged, check the state of control plane deployments
-
+	utils.TestControlPlanePostInstall(h)
 	utils.RunCheck(h, false)
 }

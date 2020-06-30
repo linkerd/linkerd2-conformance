@@ -17,14 +17,16 @@ import (
 // Describe block before running the primary tests
 // This is done so that the BeforeEach and AfterEach
 // blocks do not interfere with these tests
-func runPreFlightSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
+func runLifecycleSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
 	return ginkgo.Describe("", func() {
-		if !c.GlobalControlPlane() && c.SkipInstall() {
-			ginkgo.Skip("Skipping `linkerd install` spec")
-		}
+		_ = ginkgo.BeforeEach(func() {
+			if !c.SingleControlPlane() && c.SkipLifecycle() {
+				ginkgo.Skip("Skipping lifecycle tests")
+			}
+		})
 		_ = install.RunInstallSpec()
 		_ = upgrade.RunUpgradeSpec()
-		if !c.GlobalControlPlane() { // Immediately uninstall if each test shall have its own control-plane
+		if !c.SingleControlPlane() { // Immediately uninstall if each test shall have its own control-plane
 			_ = uninstall.RunUninstallSpec()
 		}
 	})
@@ -32,7 +34,7 @@ func runPreFlightSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) 
 
 func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
 	return ginkgo.Describe("", func() {
-		if !c.GlobalControlPlane() {
+		if !c.SingleControlPlane() {
 			_ = ginkgo.BeforeEach(func() {
 				utils.InstallLinkerdControlPlane(h, c)
 			})
@@ -47,7 +49,7 @@ func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool 
 		_ = inject.RunInjectSpec()
 
 		// global uninstall (if true) should always run at the end
-		if c.GlobalControlPlane() && h.Uninstall() {
+		if c.SingleControlPlane() && h.Uninstall() {
 			_ = uninstall.RunUninstallSpec()
 		}
 	})
@@ -63,7 +65,7 @@ func RunAllSpecs(t *testing.T) {
 	// The Describe message is intentionally left empty
 	// as it only serves to prevent randomization of specs
 	_ = ginkgo.Describe("", func() {
-		_ = runPreFlightSpecs(h, c)
+		_ = runLifecycleSpecs(h, c)
 		_ = runMainSpecs(h, c)
 	})
 

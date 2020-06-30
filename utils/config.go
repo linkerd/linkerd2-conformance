@@ -24,34 +24,37 @@ var (
 
 // Inject holds the inject test configuration
 type Inject struct {
-	SkipTest bool `yaml:"skipTest,omitempty"`
-	Clean    bool `yaml:"clean,omitempty"` // deletes all resources created while testing
+	Skip  bool `yaml:"skip,omitempty"`
+	Clean bool `yaml:"clean,omitempty"` // deletes all resources created while testing
 }
 
-// GlobalControlPlane holds the options for installing a single control plane
-type GlobalControlPlane struct {
-	Enable    bool `yaml:"enable,omitempty"`
-	Uninstall bool `yaml:"uninstall,omitempty"`
+type Lifecycle struct {
+	Skip               bool   `yaml:"skip,omitempty"`
+	UpgradeFromVersion string `yaml:"upgradeFromVersion,omitempty"`
+	Reinstall          bool   `yaml:"reinstall,omitempty"`
+	Uninstall          bool   `yaml:"uninstall,omitempty"`
 }
 
-type Install struct {
-	SkipTest           bool                   `yaml:"skipTest,omitempty"`
-	HA                 bool                   `yaml:"ha,omitempty"`
-	UpgradeFromVersion string                 `yaml:"upgradeFromVersion,omitempty"`
-	Flags              []string               `yaml:"flags,omitempty"`
-	AddOns             map[string]interface{} `yaml:"addOns,omitempty"`
-	GlobalControlPlane `yaml:"globalControlPlane,omitempty"`
+type ControlPlaneConfig struct {
+	HA     bool                   `yaml:"ha,omitempty"`
+	Flags  []string               `yaml:"flags,omitempty"`
+	AddOns map[string]interface{} `yaml:"addOns,omitempty"`
+}
+
+type ControlPlane struct {
+	Namespace          string `yaml:"namespace,omitempty"`
+	ControlPlaneConfig `yaml:"config,omitempty"`
 }
 
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion    string `yaml:"linkerdVersion,omitempty"`
-	LinkerdNamespace  string `yaml:"linkerdNamespace,omitempty"`
 	LinkerdBinaryPath string `yaml:"linkerdPath,omitempty"`
 	ClusterDomain     string `yaml:"clusterDomain,omitempty"`
 	K8sContext        string `yaml:"k8sContext,omitempty"`
 	ExternalIssuer    bool   `yaml:"externalIssuer,omitempty"`
-	Install           `yaml:"install"`
+	ControlPlane      `yaml:"controlPlane"`
+	Lifecycle         `yaml:"lifecycle,omitempty"`
 	Inject            `yaml:"inject"`
 
 	// TODO: Add fields for test specific configurations
@@ -116,9 +119,9 @@ func (options *ConformanceTestOptions) parse() error {
 		options.LinkerdVersion = version
 	}
 
-	if options.LinkerdNamespace == "" {
+	if options.ControlPlane.Namespace == "" {
 		fmt.Printf("Unspecified linkerd2 control plane namespace - use default value \"%s\"\n", defaultNs)
-		options.LinkerdNamespace = defaultNs
+		options.ControlPlane.Namespace = defaultNs
 	}
 
 	if options.ClusterDomain == "" {
@@ -135,16 +138,16 @@ func (options *ConformanceTestOptions) parse() error {
 		options.LinkerdBinaryPath = path
 	}
 
-	if !options.GlobalControlPlane() && options.Install.GlobalControlPlane.Uninstall {
+	if !options.SingleControlPlane() && options.Lifecycle.Uninstall {
 		fmt.Println("'globalControlPlane.uninstall' will be ignored as globalControlPlane is disabled")
-		options.Install.GlobalControlPlane.Uninstall = false
+		options.Lifecycle.Uninstall = false
 	}
 
-	if options.GlobalControlPlane() && options.Install.SkipTest {
+	if options.SingleControlPlane() && options.SkipLifecycle() {
 		return errors.New("Cannot skip install tests when 'install.globalControlPlane.enable' is set to \"true\"")
 	}
 
-	if options.Install.UpgradeFromVersion != "" && options.SkipInstall() {
+	if options.Lifecycle.UpgradeFromVersion != "" && options.SkipLifecycle() {
 		return errors.New("cannot skip install tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
 	}
 	return nil
@@ -171,8 +174,8 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 	helper := testutil.NewGenericTestHelper(
 		options.LinkerdBinaryPath,
 		options.LinkerdVersion,
-		options.LinkerdNamespace,
-		options.Install.UpgradeFromVersion,
+		options.ControlPlane.Namespace,
+		options.Lifecycle.UpgradeFromVersion,
 		options.ClusterDomain,
 		helmPath,
 		helmChart,
@@ -182,7 +185,7 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		multiclusterHelmChart,
 		options.ExternalIssuer,
 		multicluster,
-		options.Install.GlobalControlPlane.Uninstall,
+		options.Lifecycle.Uninstall,
 		httpClient,
 		testutil.KubernetesHelper{},
 	)
@@ -212,19 +215,19 @@ func (options *ConformanceTestOptions) GetLinkerdPath() string {
 	return options.LinkerdBinaryPath
 }
 
-// GlobalControlPlane determines if a single contGlobalControlPlane must be used for testing
-func (options *ConformanceTestOptions) GlobalControlPlane() bool {
-	return options.Install.GlobalControlPlane.Enable
+// SingleControlPlane determines if a singl CP must be used throughout
+func (options *ConformanceTestOptions) SingleControlPlane() bool {
+	return !options.Lifecycle.Reinstall
 }
 
 // HA determines if a high-availability control-plane must be used
 func (options *ConformanceTestOptions) HA() bool {
-	return options.Install.HA
+	return options.ControlPlane.ControlPlaneConfig.HA
 }
 
 // SkipInstall determines if install tests must be skipped
-func (options *ConformanceTestOptions) SkipInstall() bool {
-	return options.Install.SkipTest
+func (options *ConformanceTestOptions) SkipLifecycle() bool {
+	return options.Lifecycle.Skip
 }
 
 // CleanInject determines if resources created during inject test must be removed
@@ -234,12 +237,12 @@ func (options *ConformanceTestOptions) CleanInject() bool {
 
 // SkipInject determines if inject test must be skipped
 func (options *ConformanceTestOptions) SkipInject() bool {
-	return options.Inject.SkipTest
+	return options.Inject.Skip
 }
 
 // GetAddons returns the add-on config
 func (options *ConformanceTestOptions) GetAddons() map[string]interface{} {
-	return options.Install.AddOns
+	return options.ControlPlane.ControlPlaneConfig.AddOns
 }
 
 // GetAddOnsYAML marshals the add-on config to a YAML and returns the byte slice and error
@@ -249,5 +252,5 @@ func (options *ConformanceTestOptions) GetAddOnsYAML() (out []byte, err error) {
 
 // GetInstallFlags returns the flags set by the user for running `linkerd install`
 func (options *ConformanceTestOptions) GetInstallFlags() []string {
-	return options.Install.Flags
+	return options.ControlPlane.ControlPlaneConfig.Flags
 }

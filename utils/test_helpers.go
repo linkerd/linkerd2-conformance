@@ -9,6 +9,18 @@ import (
 	"github.com/onsi/gomega"
 )
 
+var (
+	linkerdSvcs = []string{
+		"linkerd-controller-api",
+		"linkerd-dst",
+		"linkerd-grafana",
+		"linkerd-identity",
+		"linkerd-prometheus",
+		"linkerd-web",
+		"linkerd-tap",
+	}
+)
+
 type CheckOutput struct {
 	Success    bool `json:"success"`
 	Categories []struct {
@@ -116,8 +128,7 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper, c *ConformanceTestOption
 	out, err = h.KubectlApply(out, "")
 	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
-	// TODO: Once https://github.com/linkerd/linkerd2/pull/4681 is merged, check the state of control plane deployments
-
+	TestControlPlanePostInstall(h)
 	RunCheck(h, false) // run post checks
 }
 
@@ -141,4 +152,33 @@ func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
 	gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 
 	RunCheck(h, true) // run pre checks
+}
+
+func testResourcesPostInstall(namespace string, services []string, deploys map[string]testutil.DeploySpec, h *testutil.TestHelper) {
+	ginkgo.By(fmt.Sprintf("Checking resources in namespace %s", namespace))
+	err := h.CheckIfNamespaceExists(namespace)
+	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not find namespace %s", namespace))
+
+	for _, svc := range services {
+		err = h.CheckService(namespace, svc)
+		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("error validating service %s: %s", svc, Err(err)))
+	}
+
+	for deploy, spec := range deploys {
+		err = h.CheckPods(namespace, deploy, spec.Replicas)
+		if err != nil {
+			if _, ok := err.(*testutil.RestartCountError); !ok { // if error is not due to restart count
+				ginkgo.Fail(fmt.Sprintf("CheckPods timed-out: %s", Err(err)))
+			}
+		}
+
+		err := h.CheckDeployment(namespace, deploy, spec.Replicas)
+		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("CheckDeployment timed-out for deploy/%s: %s", deploy, Err(err)))
+
+	}
+}
+
+// TestControlPlanePostInstall tests the control plane resources post installation
+func TestControlPlanePostInstall(h *testutil.TestHelper) {
+	testResourcesPostInstall(h.GetLinkerdNamespace(), linkerdSvcs, testutil.LinkerdDeployReplicas, h)
 }
