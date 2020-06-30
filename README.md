@@ -56,18 +56,18 @@ This section describes the various configuration options and its default values.
 | Option | Description | Default value |
 |-|-|-|
 | `linkerdVersion` | The linkerd2 binary version to use | Latest stable release |
-| `linkerdNamespace` | Installs the control plane in the specified namespace | `"l5d-conformance"` |
 | `linkerdBinaryPath` | If specified, the tests use the binary installed in the directory. It is recommended that this is left unspecified while using Sonobuoy or if upgrade tests are enabled | `$HOME/.linkerd2/bin/linkerd` | 
 | `clusterDomain` | Use the specified cluster domain | `"cluster.local"` |
 | `K8sContext` | Use the specified K8s context. Its is recommended that while running the tests with Sonobuoy (`sonobuoy run`), use the `--context` flag | `""` |
-| `install.skipTest` | Skip the pre-flight control plane installation tests | `false` |
-| `install.upgradeFromVersion` | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | `""` |
-| `install.ha` | Use a high-availability control plane for the tests | `false` |
-| `install.flags` | Use the specified `linkerd install` CLI flag options while testing control plane installation | `[]` |
-| `install.addOns` | Use the specified add-on configuration while testing control plane installation | `nil` |
-| `install.globalControlPlane.enable` | Install and test the control plane once and use it  throughout the testing process | `false` |
-| `install.globalControlPlane.uninstall` | If using a global control plane, uninstall once the tests complete (whether they pass or fail) | `false` |
-| `inject.skipTest` | Skip proxy injection tests | `false` |
+| `controlPlane.namespace` | Installs the control plane in the specified namespace | `"l5d-conformance"` |
+| `controlPlane.config.ha` | Use a high-availability control plane for the tests | `false` |
+| `controlPlane.config.flags` | Use the specified `linkerd install` CLI flag options while testing control plane installation | `[]` |
+| `controlPlane.config.addOns` | Use the specified add-on configuration while testing control plane installation | `nil` |
+| `lifecycle.skip` | Skip the pre-flight control plane installation tests | `false` |
+| `lifecycle.upgradeFromVersion` | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | `""` |
+| `lifecycle.reinstall` | If true, install a new control plane for each test. Otherwise, use a single control plane throughout | `false` |
+| `lifecycle.uninstall` | If using a single control plane, uninstall once the tests complete (whether they pass or fail) | `false` |
+| `inject.skip` | Skip proxy injection tests | `false` |
 | `inject.clean` | Delete the resources created for testing proxy injection | `false` |
 
 

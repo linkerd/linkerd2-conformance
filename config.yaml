@@ -1,6 +1,7 @@
 linkerdVersion: stable-2.8.1
 externalIssuer: false
 controlPlane:
+    # namespace: l5d-conformance
     config:   
         ha: false
         flags:
@@ -23,6 +24,7 @@ lifecycle:
     skip: true
     reinstall: true 
     uninstall: true
+    # upgradeFromVersion: stable-2.7.0
 inject:
     skip: false
     clean: true
