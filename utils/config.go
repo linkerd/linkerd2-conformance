@@ -157,6 +157,11 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		helmChart       = "charts/linkerd2"
 		helmStableChart = "linkerd/linkerd2"
 		helmReleaseName = ""
+
+		// TODO: move these to config while adding tests for multicluster
+		multicluster                = false
+		multiclusterHelmChart       = "multicluster-helm-chart"
+		multiclusterHelmReleaseName = "multicluster-helm-release"
 	)
 
 	httpClient := http.Client{
@@ -173,7 +178,10 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 		helmChart,
 		helmStableChart,
 		helmReleaseName,
+		multiclusterHelmReleaseName,
+		multiclusterHelmChart,
 		options.ExternalIssuer,
+		multicluster,
 		options.Install.GlobalControlPlane.Uninstall,
 		httpClient,
 		testutil.KubernetesHelper{},
@@ -187,6 +195,17 @@ func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil
 	helper.KubernetesHelper = *k8sHelper
 	return helper, nil
 }
+
+// The below defined methods on *ConformanceTestOptions will return
+// test specific configuration.
+
+// However, *TestHelper must be used for obtaining the following fields:
+// - LinkerdVersion -> TestHelper.GetVersion()
+// - LinkerdNamespace -> TestHelper.GetTestNamespace()
+// - GlobalControlPlane.Uninstall -> TestHelper.Uninstall()
+// - Install.UpgradeFromVersion -> TestHelper.UpgradeFromVersion()
+// - ExternalIssuer -> TestHelper.ExternalIssuer()
+// - ClusterDomain -> TestHelper.ClusterDomain()
 
 // GetLinkerdPath returns the path where Linkerd binary will be installed
 func (options *ConformanceTestOptions) GetLinkerdPath() string {
