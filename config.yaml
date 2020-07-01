@@ -9,17 +9,17 @@ controlPlane:
             - "debug"
             - "--proxy-log-level"
             - "warn,linkerd2_proxy=debug"
-#        addOns:
-#            tracing:
-#                enabled: true
-#                collector:
-#                    resources:
-#                        cpu:
-#                            limit: 100m
-#                            request: 10m
-#                        memory:
-#                            limit: 100Mi
-#                            request: 50Mi
+      # addOns:
+      #     tracing:
+      #         enabled: true
+      #         collector:
+      #             resources:
+      #                 cpu:
+      #                     limit: 100m
+      #                     request: 10m
+      #                 memory:
+      #                     limit: 100Mi
+      #                     request: 50Mi
 lifecycle:
     skip: false
     reinstall: false 

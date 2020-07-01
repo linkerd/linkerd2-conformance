@@ -29,7 +29,7 @@ spec:
   volumeMounts:
   - mountPath: /tmp/results
     name: results
-  - mountPath: /config.yaml
+  - mountPath: /linkerd2-conformance/config.yaml
     subPath: config.yaml
     name: test-config
     readOnly: true
