@@ -2,19 +2,11 @@
 
 set -eu
 
-if [ $# -ne 2 ]; then
-    echo "Usage: bin/${0##*/} [Username] [test|base|sonobuoy]" >&2
+if [ $# -ne 1 ]; then
+    echo "Usage: bin/${0##*/}" >&2
     exit 1
 fi
 
 cmd="docker build"
-case $2 in
-    "test")
-        $cmd -t "$1"/linkerd2-conformance .
-        ;;
-    *)
-        echo "Invalid option for source: $2"
-        exit 1 
-        ;;
-esac
+$cmd -t "$1"/linkerd2-conformance .
 

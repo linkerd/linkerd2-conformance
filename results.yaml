@@ -1,0 +1,45 @@
+name: linkerd2-conformance
+status: passed
+meta:
+  type: summary
+items:
+- name: inject.junit.xml
+  status: passed
+  meta:
+    file: results/global/reports/inject.junit.xml
+    type: file
+  items:
+  - name: Inject
+    status: passed
+    items:
+    - name: '`linkerd inject` can perform manual injection'
+      status: passed
+    - name: '`linkerd inject` can inject proxy container into pods'
+      status: passed
+    - name: '`linkerd inject` can override pod level proxy config with namespace level
+        config'
+      status: passed
+    - name: '`linkerd inject` should delete all resources created during testing'
+      status: passed
+- name: lifecycle.junit.xml
+  status: passed
+  meta:
+    file: results/global/reports/lifecycle.junit.xml
+    type: file
+  items:
+  - name: Lifecycle
+    status: passed
+    items:
+    - name: ' `linkerd install` can install a new control plane'
+      status: passed
+- name: uninstall.junit.xml
+  status: passed
+  meta:
+    file: results/global/reports/uninstall.junit.xml
+    type: file
+  items:
+  - name: Uninstall
+    status: passed
+    items:
+    - name: '`linkerd uninstall` can uninstall the control plane'
+      status: passed

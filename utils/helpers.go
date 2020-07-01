@@ -11,25 +11,23 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var (
-	// TestHelper stores a global instace of tesutil.TestHelper
-	TestHelper *testutil.TestHelper
-
-	// TestConfig stores a global instance of the parsed config YAML
-	TestConfig *ConformanceTestOptions
-)
-
 const (
 	installEnv           = "LINKERD2_VERSION"
-	configFile           = "config.yaml"
+	configFile           = "../../config.yaml"
 	linkerdInstallScript = "install.sh"
 	installScriptURL     = "https://run.linkerd.io/install"
 )
 
-// InitTestHelper initializes a test helper
-func InitTestHelper() error {
+var (
+	testHelper *testutil.TestHelper
+	testConfig *ConformanceTestOptions
+)
+
+// InitNewHelperAndConfig returns an instance of testutil.TestHelper and ConformanceTestOptions
+func initNewHelperAndConfig() error {
 
 	var err error
+	testConfig = &ConformanceTestOptions{}
 
 	if fileExists(configFile) {
 		yamlFile, err := ioutil.ReadFile(configFile)
@@ -37,22 +35,22 @@ func InitTestHelper() error {
 			return err
 		}
 
-		if err := yaml.UnmarshalStrict(yamlFile, &TestConfig); err != nil {
+		if err := yaml.UnmarshalStrict(yamlFile, &testConfig); err != nil {
 			return fmt.Errorf("failed to parse YAML: %s", err.Error())
 		}
 
 	}
 
-	if err := TestConfig.parse(); err != nil {
+	if err := testConfig.parse(); err != nil {
 		return err
 	}
 
-	TestHelper, err = TestConfig.initNewTestHelperFromOptions()
+	testHelper, err = testConfig.initNewTestHelperFromOptions()
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return err
 }
 
 func fileExists(filename string) bool {
@@ -143,7 +141,15 @@ func Err(err error) string {
 	return ""
 }
 
-// GetGetHelperAndConfig returns a reference of the initialized TestHelper and TestConfig
+// GetHelperAndConfig returns a reference to the initialized `testHelper` and `testConfig`
 func GetHelperAndConfig() (*testutil.TestHelper, *ConformanceTestOptions) {
-	return TestHelper, TestConfig
+	return testHelper, testConfig
+}
+
+func init() {
+	err := initNewHelperAndConfig()
+	if err != nil {
+		fmt.Printf("failed to initialize test helper or config: %s", err.Error())
+		os.Exit(1)
+	}
 }

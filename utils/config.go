@@ -144,11 +144,11 @@ func (options *ConformanceTestOptions) parse() error {
 	}
 
 	if options.SingleControlPlane() && options.SkipLifecycle() {
-		return errors.New("Cannot skip install tests when 'install.globalControlPlane.enable' is set to \"true\"")
+		return errors.New("Cannot skip lifecycle tests when 'install.globalControlPlane.enable' is set to \"true\"")
 	}
 
 	if options.Lifecycle.UpgradeFromVersion != "" && options.SkipLifecycle() {
-		return errors.New("cannot skip install tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
+		return errors.New("cannot skip lifecycle tests when 'install.upgradeFromVersion' is set - either enable install tests, or omit 'install.upgradeFromVersion'")
 	}
 	return nil
 }
@@ -227,7 +227,7 @@ func (options *ConformanceTestOptions) HA() bool {
 
 // SkipInstall determines if install tests must be skipped
 func (options *ConformanceTestOptions) SkipLifecycle() bool {
-	return options.Lifecycle.Skip
+	return !options.SingleControlPlane() && options.Lifecycle.Skip
 }
 
 // CleanInject determines if resources created during inject test must be removed

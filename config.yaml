@@ -1,4 +1,4 @@
-linkerdVersion: stable-2.8.1
+linkerdVersion: stable-2.8.0
 externalIssuer: false
 controlPlane:
     # namespace: l5d-conformance
@@ -9,20 +9,20 @@ controlPlane:
             - "debug"
             - "--proxy-log-level"
             - "warn,linkerd2_proxy=debug"
-        addOns:
-            tracing:
-                enabled: true
-                collector:
-                    resources:
-                        cpu:
-                            limit: 100m
-                            request: 10m
-                        memory:
-                            limit: 100Mi
-                            request: 50Mi
+#        addOns:
+#            tracing:
+#                enabled: true
+#                collector:
+#                    resources:
+#                        cpu:
+#                            limit: 100m
+#                            request: 10m
+#                        memory:
+#                            limit: 100Mi
+#                            request: 50Mi
 lifecycle:
-    skip: true
-    reinstall: true 
+    skip: false
+    reinstall: false 
     uninstall: true
     # upgradeFromVersion: stable-2.7.0
 inject:

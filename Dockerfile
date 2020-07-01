@@ -1,12 +1,10 @@
-FROM golang:1.14 as build
+FROM golang:1.14
 
-COPY . /conformance
-WORKDIR /conformance
+COPY . /linkerd2-conformance
+WORKDIR /linkerd2-conformance
 
 # Build the test binary
-RUN go test -c -o conformance
-
-FROM debian:bullseye
+RUN go test -i ./tests/...
 
 RUN apt update && \ 
     apt upgrade -y && \
@@ -16,13 +14,4 @@ RUN apt update && \
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin
-
-# Copy test binary
-COPY --from=build /conformance/conformance /conformance
-
-# Copy run script
-
-COPY ./sonobuoy/run.sh .
-COPY ./testdata /testdata
-CMD ["/bin/bash", "run.sh"]
 

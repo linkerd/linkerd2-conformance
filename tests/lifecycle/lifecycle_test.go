@@ -1,22 +1,16 @@
-package conformance_test
+package lifecycle
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
-	"github.com/linkerd/linkerd2-conformance/specs"
 	"github.com/linkerd/linkerd2-conformance/utils"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 func TestMain(m *testing.M) {
-	err := utils.InitTestHelper()
-	if err != nil {
-		fmt.Printf("error initializing tests: %s\n", err.Error())
-		os.Exit(1)
-
-	}
-
 	h, c := utils.GetHelperAndConfig()
 
 	// install linkerd binary
@@ -35,6 +29,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestConformance(t *testing.T) {
-	specs.RunAllSpecs(t)
+func TestLifecycle(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Lifecycle")
 }

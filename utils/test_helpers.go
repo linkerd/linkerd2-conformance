@@ -96,7 +96,7 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper, c *ConformanceTestOption
 
 	if len(c.GetAddons()) > 0 {
 
-		addOnFile := "addons.yaml"
+		addOnFile := "../../addons.yaml"
 		if !fileExists(addOnFile) {
 			out, err := c.GetAddOnsYAML()
 			gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to produce add-on config file: %s", Err(err)))
@@ -181,4 +181,22 @@ func testResourcesPostInstall(namespace string, services []string, deploys map[s
 // TestControlPlanePostInstall tests the control plane resources post installation
 func TestControlPlanePostInstall(h *testutil.TestHelper) {
 	testResourcesPostInstall(h.GetLinkerdNamespace(), linkerdSvcs, testutil.LinkerdDeployReplicas, h)
+}
+
+func BeforeSuiteCallback() {
+	h, c := GetHelperAndConfig()
+
+	// install new control plane for each test
+	if !c.SingleControlPlane() {
+		InstallLinkerdControlPlane(h, c)
+	}
+}
+
+func AfterSuiteCallBack() {
+	h, c := GetHelperAndConfig()
+
+	// uninstall control plane after each test
+	if !c.SingleControlPlane() {
+		UninstallLinkerdControlPlane(h)
+	}
 }

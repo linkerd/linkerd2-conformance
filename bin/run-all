@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -eu
+
+# Test IDs are important because thats the order in which sonobuoy will aggregate results
+
+bin/go-test lifecycle 01
+
+# Add tests here
+bin/go-test inject 02
+
+# Should always run at the end
+bin/go-test uninstall 03

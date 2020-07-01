@@ -22,9 +22,7 @@ sonobuoy-config:
   result-format: junit
 spec:
   command:
-  - /bin/bash
-  args:
-      - ./run.sh
+      - ./sonobuoy/run
   image: mayankshah1607/linkerd2-conformance
   name: plugin
   resources: {}
