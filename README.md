@@ -139,9 +139,7 @@ On completion of the test(s), a `reports/` folder will be created at the root di
 
 ## Adding new tests
 
-This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to describe tests and write assertions. 
-
-Each of the tests can be found under the `tests/` folder, in its respective packages.
+This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to describe tests and write assertions. Each of the tests can be found under the `tests/` folder, in its respective packages.
 
 To add a new test, follow the steps below.
 
@@ -163,7 +161,7 @@ Under the `tests/l5dFeature` directory, you will find 3 files
 
 - `l5dFeature_test.go` - the entry point for our `l5dFeature` test suite
 - `specs.go` - the structure of our [Ginkgo](https://github.com/onsi/ginkgo) specs are defined here
-- `tests.go` - [Gomega](https://github.com/onsi/gomega) assertions and test logic organnized into separate functions, each corresponding to a spec defined in `specs.go`
+- `tests.go` - [Gomega](https://github.com/onsi/gomega) assertions and test logic organized into separate functions, each corresponding to a spec defined in `specs.go`
 
 Replace every instance of `<testname>` with the name of the test / package (in this case - `l5dFeature`). An example of what the file contents must look like is shown below.
 
@@ -228,13 +226,12 @@ Follow the instructions under [this section](https://github.com/mayankshah1607/l
 
 #### 4. Wiring up the newly added test
 
-Once the test has been writte correctly, and is working as expected, include it under `bin/run-all`.
+Once the test has been written correctly and is working as expected, include it under `bin/run-all`.
 
 For example
 
 ```bash
 #!/bin/bash
-
 set -eu
 
 # Test IDs are important because thats the order in which sonobuoy will aggregate results
@@ -247,7 +244,6 @@ bin/go-test l5dFeature 03 # Newly added tests
 
 # Should always run at the end
 bin/go-test uninstall 03
-
 ```
 
 <!-- refs -->
