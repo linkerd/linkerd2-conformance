@@ -1,9 +1,6 @@
 package <testname>
 
 import (
-	"fmt"
-
-	"github.com/linkerd/linkerd2-conformance/utils"
 	"github.com/onsi/ginkgo"
 )
 

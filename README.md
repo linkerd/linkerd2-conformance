@@ -34,7 +34,7 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 
 ## Repository Structure
 
-- [`tests`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages
+- [`tests`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features organized into separate packages
 - [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
 - [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin) contains useful helper scripts to build/push the Docker image and running the tests
@@ -141,97 +141,112 @@ On completion of the test(s), a `reports/` folder will be created at the root di
 
 This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to describe tests and write assertions. 
 
-Rather than having a separate test suite for each feature (and its associated `_test.go` files), this project provides a single test suite that runs tests for each of the features in the form of a [spec](https://onsi.github.io/ginkgo/#adding-specs-to-a-suite). This was done to have greater control over the order in which the tests are run, while having the flexibility to use a YAML configuration file. Hence, the below workflow must be followed while adding a new test to this project.
+Each of the tests can be found under the `tests/` folder, in its respective packages.
 
-For the sake of understanding, we shall assume a feature called `l5dFeature`, for which we shall add a new test
+To add a new test, follow the steps below.
 
-#### 1. Bootstrapping
-   
-To add a new test for `l5Feature`, we first add a new package `l5dFeature` under the `specs` folder.
+#### 1. Initial bootstrapping
 
-```bash
-$ mkdir specs/l5dFeature
-```
+Copy the `test_template/` folder into the `tests/` directory, and rename it to the name of the test that is being added. 
 
-Our new package shall mainly require 2 new files
-
-- `spec.go` - this file holds the description and structure of the test in the form of [`Describe`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [`It`](https://onsi.github.io/ginkgo/#individual-specs-it), [`Context`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [etc.](https://onsi.github.io/ginkgo/#structuring-your-specs) blocks.
-- `tests.go` - this file shall contain assertions and testing logic for each of our specs as described in `specs.go`
+For example, let's assume a sample Linkerd2 feature called `l5dFeature`.
 
 ```bash
-$ touch specs/l5dFeature/tests.go
-$ touch specs/l5dFeature/spec.go
+$ cp -r test_template/ tests/
+$ mv tests/test_template tests/l5dFeature
+$ mv tests/l5dFeature/template_test.go tests/l5dFeature/l5dFeature_test.go
 ```
 
-#### 2. Writing the tests
-   
-`spec.go` must contain a single exported function that returns a `ginkgo.Describe` block that holds the structure of our tests. This function must be named `Runl5dFeatureSpec`.   
+#### 2. Adding the tests
 
-For example
+Under the `tests/l5dFeature` directory, you will find 3 files
+
+- `l5dFeature_test.go` - the entry point for our `l5dFeature` test suite
+- `specs.go` - the structure of our [Ginkgo](https://github.com/onsi/ginkgo) specs are defined here
+- `tests.go` - [Gomega](https://github.com/onsi/gomega) assertions and test logic organnized into separate functions, each corresponding to a spec defined in `specs.go`
+
+Replace every instance of `<testname>` with the name of the test / package (in this case - `l5dFeature`). An example of what the file contents must look like is shown below.
 
 ```go
-// spec.go
+// l5dFeature_test.go
 
+package l5dFeature
+
+import (
+	"testing"
+
+	"github.com/linkerd/linkerd2-conformance/utils"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+var _ = BeforeSuite(utils.BeforeSuiteCallback)
+
+func TestL5dFeature(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "L5d feature")
+}
+
+var _ = AfterSuite(utils.AfterSuiteCallBack)
+
+```
+
+```go
+// specs.go
 package l5dFeature
 
 import (
 	"github.com/onsi/ginkgo"
 )
 
-func Runl5dFeatureSpec() bool {
-  return ginkgo.Describe("l5d Feature", func() {
-    ginkgo.It("can do something cool", testDoSomethingCool)
-    ginkgo.It("can do something cooler", testDoSomethingCooler)
+var _ = ginkgo.Describe("L5d Featuure", func() {
+	h, c := utils.GetHelperAndConfig()
 
-    ginkgo.It("should throw error", func() {
-      ginkgo.When("this is unspecified", testThrowErrorUnspecified)
-      ginkgo.When("something breaks", testThrowErrorWhenBroken)
-    })
-  })
-}
+	ginkgo.It("can do this", testCanDoThis)
+	ginkgo.It("can do that", testCanDoThat)
+})
+
 ```
-`tests.go` must contain the functions that do the actual testing and assertions, which are used as callbacks as shown above.
-
-For example
 
 ```go
 // tests.go
 
 package l5dFeature
 
-import (
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
-)
+func testCanDoThis() {
+	// add assertions and test logic here
+}
 
-func testSomethingCool() {
-  // ...add testing logic here
-
-  err := doSomethingCool()
-
-  // sample assertion
-  gomega.Expect(err).Should(gomega.BeNil(), "could not do something cool")
+func testCanDoThat() {
+	// add assertions and test logic here
 }
 ```
 
-#### 3. Wiring up the newly added test
+#### 3. Running the test locally
 
-Once the tests have been added, the newly written `Runl5dFeatureSpec` must be brought to scope under the `specs` package. To do so, simply import the `l5dFeature` package under `specs/specs.go`, and call `Runl5dFeatureSpec` in the function body of `runMainSpecs` (or `runPreFlightSpecs` depending on what is being tested).
+Follow the instructions under [this section](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally) to run the newly added test locally.
+
+#### 4. Wiring up the newly added test
+
+Once the test has been writte correctly, and is working as expected, include it under `bin/run-all`.
 
 For example
 
-```go
-func runMainSpecs(h *testutil.TestHelper, c *utils.ConformanceTestOptions) bool {
-	return ginkgo.Describe("", func() {
-    // ...test initialisation logic here
+```bash
+#!/bin/bash
 
-		// Bring main tests into scope
-    _ = inject.RunInjectSpec()
-    _ = l5dFeature.Runl5dFeatureSpec() // call your test here
+set -eu
 
-		// ...post testing logic here
-	})
-}
+# Test IDs are important because thats the order in which sonobuoy will aggregate results
+
+bin/go-test lifecycle 01
+
+# Add tests here
+bin/go-test inject 02
+bin/go-test l5dFeature 03 # Newly added tests
+
+# Should always run at the end
+bin/go-test uninstall 03
 
 ```
 
