@@ -34,10 +34,10 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 
 ## Repository Structure
 
-- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages. `specs/specs.go` exports these specs as a single runnable unit
+- [`tests`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features in a organized into packages
 - [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
-- [`conformance_test.go`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/conformance_test.go) is the entry point into the tests
+- [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin) contains useful helper scripts to build/push the Docker image and running the tests
 
 ## Configuring your tests
 
@@ -109,24 +109,10 @@ $ sonobuoy status
 $ results=$(sonobuoy retrieve)
 
 # Inspect the results
-$ sonobuoy results $results --mode detailed | jq
+$ sonobuoy results $results --mode dump
 
 # Clean up your cluster
 $ sonobuoy delete --wait
-```
-
-Optionally, you may also view the test summary by running the below commands.
-
-```bash
-# Extract tarball to ./results
-$ mkdir results \
-  && tar -C ./results -zxvf $results
-
-# Change to results directory
-$ cd results
-
-# Output the detailed summary of the tests
-$ cat plugins/linkerd2-conformance/results/global/summary 
 ```
 
 ### Running the tests locally
@@ -141,16 +127,15 @@ $ git clone https://github.com/linkerd/linkerd2-conformance
 $ cd linkerd2-conformance
 
 # Use the convinence script to run `go run`
-$ bin/go-test [OPTIONS]
+# $ bin/go-test [TEST NAME]
 
-# Example
+$ bin/go-test inject
 
-# This command installs the control plane under the "l5d-conformance" namespace,
-# tests exteral issuers and uninstalls the control plane once the tests complete
-$ bin/go-test -ginkgo.v
+# To run all the tests in the reccomended order
+$ bin/run-all
 ```
 
-Additionally, as this project uses [Ginkgo](https://github.com/onsi/ginkgo) for the tests, you may also pass flags options from the [Ginkgo CLI](https://onsi.github.io/ginkgo/#the-ginkgo-cli).
+On completion of the test(s), a `reports/` folder will be created at the root directory of the project, from where the JUnit reports of each individual test can be accessed.
 
 ## Adding new tests
 
