@@ -30,7 +30,7 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 - [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
   - [Initial bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-initial-bootstrapping)
   - [Adding tests](https://github.com/mayankshah1607/linkerd2-conformance#2-adding-tests)
-  - [Wiring up newly tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-newly-added-test)
+  - [Wiring up newly added tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-newly-added-test)
 
 ## Repository Structure
 
