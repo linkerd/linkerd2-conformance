@@ -28,9 +28,9 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
   - [Running the tests using Docker]()
   - [Running the tests locally](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally)
 - [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
-  - [Bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-bootstrapping)
-  - [Writing the tests](https://github.com/mayankshah1607/linkerd2-conformance#2-writing-the-tests)
-  - [Wiring up the tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-the-newly-added-test)
+  - [Initial bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-initial-bootstrapping)
+  - [Adding tests](https://github.com/mayankshah1607/linkerd2-conformance#2-adding-tests)
+  - [Wiring up newly tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-newly-added-test)
 
 ## Repository Structure
 
@@ -38,6 +38,7 @@ The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](h
 - [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
 - [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
 - [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin) contains useful helper scripts to build/push the Docker image and running the tests
+- [`test_template`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/test_template) contains a sample template for adding new tests under the `tests/` folder
 
 ## Configuring your tests
 
@@ -127,13 +128,15 @@ $ git clone https://github.com/linkerd/linkerd2-conformance
 $ cd linkerd2-conformance
 
 # Use the convinence script to run `go run`
-# $ bin/go-test [TEST NAME]
+# $ bin/go-test [TEST NAME] [Test ID]
 
-$ bin/go-test inject
+$ bin/go-test inject 01
 
-# To run all the tests in the reccomended order
+# To run all the tests in the recomended order
 $ bin/run-all
 ```
+
+> Note: The `Test ID` argument only serves the purpose of ordering the JUnit reports for Sonobuoy to aggregate the results. While running a single test locally, any arbitrary number can be provided
 
 On completion of the test(s), a `reports/` folder will be created at the root directory of the project, from where the JUnit reports of each individual test can be accessed.
 
@@ -155,7 +158,7 @@ $ mv tests/test_template tests/l5dFeature
 $ mv tests/l5dFeature/template_test.go tests/l5dFeature/l5dFeature_test.go
 ```
 
-#### 2. Adding the tests
+#### 2. Adding tests
 
 Under the `tests/l5dFeature` directory, you will find 3 files
 
@@ -224,7 +227,7 @@ func testCanDoThat() {
 
 Follow the instructions under [this section](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally) to run the newly added test locally.
 
-#### 4. Wiring up the newly added test
+#### 4. Wiring up newly added test
 
 Once the test has been written correctly and is working as expected, include it under `bin/run-all`.
 
