@@ -16,7 +16,6 @@ import (
 var (
 	defaultNs            = "l5d-conformance"
 	defaultClusterDomain = "cluster.local"
-	defaultVersion       = "stable-2.8.0"
 	defaultPath          = "/.linkerd2/bin/linkerd"
 
 	versionEndpointURL = "https://versioncheck.linkerd.io/version.json"
@@ -85,7 +84,7 @@ func getLatestStableVersion() (string, error) {
 		return "", err
 	}
 
-	return versionResp["stable"], nil
+	return versionResp["edge"], nil
 }
 
 func getDefaultLinkerdPath() (string, error) {
@@ -93,7 +92,7 @@ func getDefaultLinkerdPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s/.linkerd2/bin/linkerd", home), nil
+	return fmt.Sprintf("%s%s", home, defaultPath), nil
 }
 
 func initK8sHelper(context string, retryFor func(time.Duration, func() error) error) (*testutil.KubernetesHelper, error) {
@@ -111,8 +110,7 @@ func (options *ConformanceTestOptions) parse() error {
 		var err error
 
 		if version, err = getLatestStableVersion(); err != nil {
-			fmt.Printf("error fetching latest version: %s\n", err)
-			version = defaultVersion
+			return fmt.Errorf("error fetching latest version: %s\n", err)
 		}
 
 		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", version)
