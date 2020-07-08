@@ -11,13 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const (
-	installEnv           = "LINKERD2_VERSION"
-	configFile           = "../../config.yaml"
-	linkerdInstallScript = "install.sh"
-	installScriptURL     = "https://run.linkerd.io/install"
-)
-
 var (
 	testHelper *testutil.TestHelper
 	testConfig *ConformanceTestOptions
@@ -126,6 +119,15 @@ func InstallLinkerdBinary(linkerd, version string, force bool, verbose bool) err
 	}
 
 	return nil
+}
+
+func indexOf(arr []string, item string) int {
+	for i, v := range arr {
+		if v == item {
+			return i
+		}
+	}
+	return -1
 }
 
 // Err returns err.Error() string

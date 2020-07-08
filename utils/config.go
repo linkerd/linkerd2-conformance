@@ -13,14 +13,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var (
-	defaultNs            = "l5d-conformance"
-	defaultClusterDomain = "cluster.local"
-	defaultPath          = "/.linkerd2/bin/linkerd"
-
-	versionEndpointURL = "https://versioncheck.linkerd.io/version.json"
-)
-
 // Inject holds the inject test configuration
 type Inject struct {
 	Skip  bool `yaml:"skip,omitempty"`
@@ -45,6 +37,15 @@ type ControlPlane struct {
 	ControlPlaneConfig `yaml:"config,omitempty"`
 }
 
+type IngressConfig struct {
+	Controllers []string `yaml:"controllers"`
+}
+
+type Ingress struct {
+	Skip          bool `yaml:"skip,omitempty"`
+	IngressConfig `yaml:"config,omitempty"`
+}
+
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion    string `yaml:"linkerdVersion,omitempty"`
@@ -55,6 +56,7 @@ type ConformanceTestOptions struct {
 	ControlPlane      `yaml:"controlPlane"`
 	Lifecycle         `yaml:"lifecycle,omitempty"`
 	Inject            `yaml:"inject"`
+	Ingress           `yaml:"ingress"`
 
 	// TODO: Add fields for test specific configurations
 	// TODO: Add fields for Helm tests
@@ -152,19 +154,6 @@ func (options *ConformanceTestOptions) parse() error {
 }
 
 func (options *ConformanceTestOptions) initNewTestHelperFromOptions() (*testutil.TestHelper, error) {
-	var (
-		//TODO: move these to ConformanceTestOptions while writing Helm tests
-		helmPath        = "target/helm"
-		helmChart       = "charts/linkerd2"
-		helmStableChart = "linkerd/linkerd2"
-		helmReleaseName = ""
-
-		// TODO: move these to config while adding tests for multicluster
-		multicluster                = false
-		multiclusterHelmChart       = "multicluster-helm-chart"
-		multiclusterHelmReleaseName = "multicluster-helm-release"
-	)
-
 	httpClient := http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -251,4 +240,14 @@ func (options *ConformanceTestOptions) GetAddOnsYAML() (out []byte, err error) {
 // GetInstallFlags returns the flags set by the user for running `linkerd install`
 func (options *ConformanceTestOptions) GetInstallFlags() []string {
 	return options.ControlPlane.ControlPlaneConfig.Flags
+}
+
+// SkipIngress determines if ingress tests must be skipped
+func (options *ConformanceTestOptions) SkipIngress() bool {
+	return options.Ingress.Skip
+}
+
+// ShouldTestIngressOfType checks if a given type of ingress must be tested
+func (options *ConformanceTestOptions) ShouldTestIngressOfType(t string) bool {
+	return indexOf(options.Ingress.IngressConfig.Controllers, t) > -1
 }
