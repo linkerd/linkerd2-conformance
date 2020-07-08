@@ -70,7 +70,8 @@ This section describes the various configuration options and its default values.
 | `lifecycle.uninstall` | If using a single control plane, uninstall once the tests complete (whether they pass or fail) | `false` |
 | `inject.skip` | Skip proxy injection tests | `false` |
 | `inject.clean` | Delete the resources created for testing proxy injection | `false` |
-
+| `ingress.skip` | If true, skips all ingress tests | `false` |
+| `ingress.config.controllers` | List of ingress controllers to test. Currently only supports `nginx` | []string |
 
 
 ## Usage

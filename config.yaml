@@ -28,3 +28,8 @@ lifecycle:
 inject:
     skip: false
     clean: true
+ingress:
+    skip: false
+    config:
+        controllers:
+            - nginx
