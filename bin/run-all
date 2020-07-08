@@ -8,6 +8,7 @@ bin/go-test lifecycle 01
 
 # Add tests here
 bin/go-test inject 02
+bin/go-test ingress 03
 
 # Should always run at the end
-bin/go-test uninstall 03
+bin/go-test uninstall 04
