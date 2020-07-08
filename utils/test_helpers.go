@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/linkerd/linkerd2/testutil"
 	"github.com/onsi/ginkgo"
@@ -253,11 +254,8 @@ func TestEmojivotoInject() {
 	checkSampleAppState()
 
 	for _, deploy := range emojivotoDeploys {
-		pods, err := h.GetPodsForDeployment(emojivotoNs, deploy)
-		gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pod(s) for deployment: %s", Err(err)))
-		containers := pods[0].Spec.Containers
-		proxyContainer := testutil.GetProxyContainer(containers)
-		gomega.Expect(proxyContainer).ShouldNot(gomega.BeNil(), fmt.Sprintf("could not find a proxy container for deploy/%s", deploy))
+		err := CheckProxyContainer(deploy, emojivotoNs)
+		gomega.Expect(err).Should(gomega.BeNil(), Err(err))
 	}
 }
 
@@ -268,4 +266,21 @@ func TestEmojivotoUninstall() {
 
 	_, err := h.Kubectl("", "delete", "ns", emojivotoNs)
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("could not delete namespace %s: %s", emojivotoNs, Err(err)))
+}
+
+// CheckProxyContainer gets the pods from a deployment, and checks if the proxy container is present
+func CheckProxyContainer(deployName, namespace string) error {
+	h, _ := GetHelperAndConfig()
+	return h.RetryFor(time.Minute*3, func() error {
+		pods, err := h.GetPodsForDeployment(namespace, deployName)
+		if err != nil {
+			return fmt.Errorf("could not get pod(s) for deployment %s: %s", deployName, err.Error())
+		}
+		containers := pods[0].Spec.Containers
+		proxyContainer := testutil.GetProxyContainer(containers)
+		if proxyContainer == nil {
+			return fmt.Errorf("could not find proxy container for deployment %s: %s", deployName, err.Error())
+		}
+		return nil
+	})
 }

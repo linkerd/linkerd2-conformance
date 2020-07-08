@@ -21,7 +21,7 @@ func pingEmojivoto(ip string) error {
 	req.Host = "example.com"
 
 	client := http.Client{
-		Timeout: time.Second * 15,
+		Timeout: time.Minute,
 	}
 
 	res, err := client.Do(req)
@@ -40,7 +40,6 @@ func pingEmojivoto(ip string) error {
 
 func testNginx() {
 	h, _ := utils.GetHelperAndConfig()
-
 	ginkgo.By("Creating ingress-nginx controller")
 	_, err := h.Kubectl("", "apply", "-f", "testdata/controllers/nginx.yaml")
 
@@ -62,11 +61,10 @@ func testNginx() {
 	err = h.CheckPods(utils.NginxNs, utils.NginxController, 1)
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to verify controller pods: %s", utils.Err(err)))
 
-	pods, err := h.GetPodsForDeployment(utils.NginxNs, utils.NginxController)
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pod(s) for deployment: %s", utils.Err(err)))
-	containers := pods[0].Spec.Containers
-	proxyContainer := testutil.GetProxyContainer(containers)
-	gomega.Expect(proxyContainer).ShouldNot(gomega.BeNil(), fmt.Sprintf("could not find a proxy container for deploy/%s", utils.NginxController))
+	ginkgo.By("Verifying if ingress controller pods have been injected")
+	// Wait upto 3mins for proxy container to show up
+	err = utils.CheckProxyContainer(utils.NginxController, utils.NginxNs)
+	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
 
 	ginkgo.By("Applying ingress resource")
 	_, err = h.Kubectl("", "apply", "-f", "testdata/resources/nginx.yaml")

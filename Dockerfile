@@ -9,7 +9,8 @@ COPY tests/ tests/
 COPY utils/ utils/
 COPY go.mod .
 COPY go.sum .
-# Build the test binary
+
+# Install dependencies and compile the test code
 RUN go test -i ./tests/...
 
 RUN apt update && \ 

@@ -2,6 +2,7 @@ package inject
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/linkerd/linkerd2-conformance/utils"
 	"github.com/linkerd/linkerd2/pkg/k8s"
@@ -100,15 +101,22 @@ func testProxyInjection() {
 
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to wait for pod/%s to be initialized in namespace %s: %s: %s", podName, proxyInjectTestNs, utils.Err(err), o))
 
-	ginkgo.By(fmt.Sprintf("Getting pods from namespace %s", proxyInjectTestNs))
-	pods, err := h.GetPods(proxyInjectTestNs, map[string]string{"app": podName})
+	ginkgo.By("Checking for existence of proxy container")
+	err = h.RetryFor(time.Minute*3, func() error {
+		pods, err := h.GetPods(proxyInjectTestNs, map[string]string{"app": podName})
+		if err != nil {
+			return fmt.Errorf("failed to fetch pod/%s: %s", podName, err.Error())
+		}
 
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get pods in namespace %s", proxyInjectTestNs))
-	gomega.Expect(len(pods)).Should(gomega.Equal(1), fmt.Sprintf("found %d pods, expected %d", len(pods), 1))
+		containers := pods[0].Spec.Containers
 
-	containers := pods[0].Spec.Containers
-	proxyContainers := testutil.GetProxyContainer(containers)
-	gomega.Expect(proxyContainers).ShouldNot(gomega.BeNil(), fmt.Sprint("proxy container not injected"))
+		proxyContainers := testutil.GetProxyContainer(containers)
+		if proxyContainers == nil {
+			return fmt.Errorf("proxy container is not injected")
+		}
+		return nil
+	})
+	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
 }
 
 func testInjectAutoNsOverrideAnnotations() {
