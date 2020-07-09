@@ -38,6 +38,27 @@ func pingEmojivoto(ip string) error {
 
 }
 
+func getExternalIP(svc, ns string) (string, error) {
+	h, _ := utils.GetHelperAndConfig()
+	var ip string
+	var err error
+
+	err = h.RetryFor(time.Minute*5, func() error {
+		ip, err = h.Kubectl("", "get", "svc", "-n", ns, svc, "-o", "jsonpath='{.status.loadBalancer.ingress[0].ip}'")
+		if err != nil {
+			return fmt.Errorf("failed to fetch external IP: %s", err.Error())
+		}
+		if strings.Trim(ip, "'") == "" {
+			return fmt.Errorf("IP address is empty")
+		}
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return strings.Trim(ip, "'"), nil
+}
+
 func testNginx() {
 	h, _ := utils.GetHelperAndConfig()
 	ginkgo.By("Creating ingress-nginx controller")
@@ -71,9 +92,9 @@ func testNginx() {
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create ingress resource: %s", utils.Err(err)))
 
 	ginkgo.By("Checking if emojivoto is reachable")
-	ip, err := h.Kubectl("", "get", "svc", "-n", utils.NginxNs, utils.NginxController, "-o", "jsonpath='{.status.loadBalancer.ingress[0].ip}'")
-	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get external Ip address for service/%s: %s", utils.NginxController, utils.Err(err)))
-	log.Println(ip)
+	ip, err := getExternalIP(utils.NginxController, utils.NginxNs)
+	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
+
 	err = pingEmojivoto(strings.Trim(ip, "'"))
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to reach emojivoto: %s", utils.Err(err)))
 
