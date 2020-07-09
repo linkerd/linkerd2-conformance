@@ -273,13 +273,16 @@ func CheckProxyContainer(deployName, namespace string) error {
 	h, _ := GetHelperAndConfig()
 	return h.RetryFor(time.Minute*3, func() error {
 		pods, err := h.GetPodsForDeployment(namespace, deployName)
-		if err != nil {
+		if err != nil || len(pods) == 0 {
 			return fmt.Errorf("could not get pod(s) for deployment %s: %s", deployName, err.Error())
 		}
 		containers := pods[0].Spec.Containers
+		if len(containers) == 0 {
+			return fmt.Errorf("could not find container(s) for deployment %s", deployName)
+		}
 		proxyContainer := testutil.GetProxyContainer(containers)
 		if proxyContainer == nil {
-			return fmt.Errorf("could not find proxy container for deployment %s: %s", deployName, err.Error())
+			return fmt.Errorf("could not find proxy container for deployment %s", deployName)
 		}
 		return nil
 	})

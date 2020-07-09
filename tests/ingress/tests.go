@@ -2,12 +2,12 @@ package ingress
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/linkerd/linkerd2-conformance/utils"
-	"github.com/linkerd/linkerd2/testutil"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 )
@@ -73,7 +73,7 @@ func testNginx() {
 	ginkgo.By("Checking if emojivoto is reachable")
 	ip, err := h.Kubectl("", "get", "svc", "-n", utils.NginxNs, utils.NginxController, "-o", "jsonpath='{.status.loadBalancer.ingress[0].ip}'")
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to get external Ip address for service/%s: %s", utils.NginxController, utils.Err(err)))
-
+	log.Println(ip)
 	err = pingEmojivoto(strings.Trim(ip, "'"))
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to reach emojivoto: %s", utils.Err(err)))
 
