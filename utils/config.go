@@ -49,7 +49,7 @@ type Ingress struct {
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion    string `yaml:"linkerdVersion,omitempty"`
-	LinkerdBinaryPath string `yaml:"linkerdPath,omitempty"`
+	LinkerdBinaryPath string `yaml:"linkerdBinaryPath,omitempty"`
 	ClusterDomain     string `yaml:"clusterDomain,omitempty"`
 	K8sContext        string `yaml:"k8sContext,omitempty"`
 	ExternalIssuer    bool   `yaml:"externalIssuer,omitempty"`
