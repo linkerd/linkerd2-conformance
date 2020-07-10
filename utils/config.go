@@ -46,6 +46,12 @@ type Ingress struct {
 	IngressConfig `yaml:"config,omitempty"`
 }
 
+type TestCase struct {
+	Lifecycle `yaml:"lifecycle,omitempty"`
+	Inject    `yaml:"inject"`
+	Ingress   `yaml:"ingress"`
+}
+
 // ConformanceTestOptions holds the values fed from the test config file
 type ConformanceTestOptions struct {
 	LinkerdVersion    string `yaml:"linkerdVersion,omitempty"`
@@ -54,10 +60,7 @@ type ConformanceTestOptions struct {
 	K8sContext        string `yaml:"k8sContext,omitempty"`
 	ExternalIssuer    bool   `yaml:"externalIssuer,omitempty"`
 	ControlPlane      `yaml:"controlPlane"`
-	Lifecycle         `yaml:"lifecycle,omitempty"`
-	Inject            `yaml:"inject"`
-	Ingress           `yaml:"ingress"`
-
+	TestCase          `yaml:"testCase"`
 	// TODO: Add fields for test specific configurations
 	// TODO: Add fields for Helm tests
 }

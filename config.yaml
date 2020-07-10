@@ -20,16 +20,17 @@ controlPlane:
       #                 memory:
       #                     limit: 100Mi
       #                     request: 50Mi
-lifecycle:
-    skip: false
-    reinstall: false 
-    uninstall: true
-    # upgradeFromVersion: stable-2.7.0
-inject:
-    skip: true
-    clean: true
-ingress:
-    skip: false
-    config:
-        controllers:
-            - nginx
+testCase:
+    lifecycle:
+        skip: false
+        reinstall: false 
+        uninstall: true
+        # upgradeFromVersion: stable-2.7.0
+    inject:
+        skip: true
+        clean: true
+    ingress:
+        skip: false
+        config:
+            controllers:
+                - nginx
