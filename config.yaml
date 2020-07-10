@@ -26,7 +26,7 @@ lifecycle:
     uninstall: true
     # upgradeFromVersion: stable-2.7.0
 inject:
-    skip: false
+    skip: true
     clean: true
 ingress:
     skip: false

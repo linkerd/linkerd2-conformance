@@ -8,11 +8,7 @@ import (
 var _ = ginkgo.Describe("linkerd", func() {
 	_, c := utils.GetHelperAndConfig()
 
-	ginkgo.BeforeEach(func() {
-		if c.SkipIngress() {
-			ginkgo.Skip("Skipping ingress tests")
-		}
-	})
+	_ = utils.ShouldTestSkip(c.SkipIngress(), "Skipping ingress tests")
 
 	if c.ShouldTestIngressOfType(utils.Nginx) {
 		ginkgo.It("can work with nginx ingress controller", testNginx)

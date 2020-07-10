@@ -2,7 +2,6 @@ package ingress
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"

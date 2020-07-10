@@ -8,11 +8,7 @@ import (
 var _ = ginkgo.Describe("", func() {
 	h, c := utils.GetHelperAndConfig()
 
-	ginkgo.BeforeEach(func() {
-		if c.SkipLifecycle() {
-			ginkgo.Skip("Skipping lifecycle tests")
-		}
-	})
+	_ = utils.ShouldTestSkip(c.SkipLifecycle(), "Skipping lifecycle tests")
 
 	ginkgo.Describe("`linkerd install`", func() {
 		ginkgo.It("can install a new control plane", func() {

@@ -287,3 +287,12 @@ func CheckProxyContainer(deployName, namespace string) error {
 		return nil
 	})
 }
+
+// ShouldTestSkip is called within a Describe block to determine if a test must be skipped
+func ShouldTestSkip(skip bool, message string) bool {
+	return ginkgo.BeforeEach(func() {
+		if skip {
+			ginkgo.Skip(message)
+		}
+	})
+}

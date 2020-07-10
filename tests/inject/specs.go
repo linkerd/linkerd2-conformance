@@ -1,8 +1,6 @@
 package inject
 
 import (
-	"fmt"
-
 	"github.com/linkerd/linkerd2-conformance/utils"
 	"github.com/onsi/ginkgo"
 )
@@ -10,11 +8,7 @@ import (
 var _ = ginkgo.Describe("`linkerd inject`", func() {
 	_, c := utils.GetHelperAndConfig()
 
-	ginkgo.BeforeEach(func() {
-		if skip := c.SkipInject(); skip {
-			ginkgo.Skip(fmt.Sprintf("Skipping inject tests: inject.skil set to \"%v\" in config YAML", skip))
-		}
-	})
+	_ = utils.ShouldTestSkip(c.SkipInject(), "Skipping inject tests")
 
 	ginkgo.It("can perform manual injection", func() {
 

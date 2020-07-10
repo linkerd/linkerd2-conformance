@@ -8,11 +8,7 @@ import (
 var _ = ginkgo.Describe("`linkerd uninstall`", func() {
 	h, c := utils.GetHelperAndConfig()
 
-	ginkgo.BeforeEach(func() {
-		if !(c.SingleControlPlane() && h.Uninstall()) {
-			ginkgo.Skip("Skipping global uninstall test")
-		}
-	})
+	_ = utils.ShouldTestSkip(!(c.SingleControlPlane() && h.Uninstall()), "Skipping uninstall test")
 
 	ginkgo.It("can uninstall the control plane", func() {
 		utils.UninstallLinkerdControlPlane(h)
