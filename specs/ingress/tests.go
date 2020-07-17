@@ -20,7 +20,7 @@ func pingEmojivoto(ip string) error {
 	req.Host = "example.com"
 
 	client := http.Client{
-		Timeout: time.Minute,
+		Timeout: 3 * time.Minute,
 	}
 
 	res, err := client.Do(req)
