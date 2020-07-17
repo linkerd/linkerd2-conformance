@@ -14,9 +14,10 @@ The conformance tests exercise the following features:
 - [ ] Data plane health checks
 - [ ] Ingress configuration
 
-_...and a lot more to come_
+_...and much more_
 
-The Linkerd project is hosted by the Cloud Native Computing Foundation ([CNCF](https://www.cncf.io/)).
+If you are interested in helping to extend the test suites, see [Adding new tests](https://github.com/linkerd/linkerd2-conformance#2-adding-tests) below.
+
 
 ## Table of Contents
 
@@ -64,14 +65,14 @@ This section describes the various configuration options and its default values.
 | `controlPlane.config.ha` | Use a high-availability control plane for the tests | `false` |
 | `controlPlane.config.flags` | Use the specified `linkerd install` CLI flag options while testing control plane installation | `[]` |
 | `controlPlane.config.addOns` | Use the specified add-on configuration while testing control plane installation | `nil` |
-| `lifecycle.skip` | Skip the pre-flight control plane installation tests | `false` |
-| `lifecycle.upgradeFromVersion` | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | `""` |
-| `lifecycle.reinstall` | If true, install a new control plane for each test. Otherwise, use a single control plane throughout | `false` |
-| `lifecycle.uninstall` | If using a single control plane, uninstall once the tests complete (whether they pass or fail) | `false` |
-| `inject.skip` | Skip proxy injection tests | `false` |
-| `inject.clean` | Delete the resources created for testing proxy injection | `false` |
-| `ingress.skip` | If true, skips all ingress tests | `false` |
-| `ingress.config.controllers` | List of ingress controllers to test. Currently only supports `nginx` | []string |
+| `testCase.lifecycle.skip` | Skip the pre-flight control plane installation tests | `false` |
+| `testCase.lifecycle.upgradeFromVersion` | If specified, first install the CLI and control plane using the specified version, and test if they can be upgraded to `linkerdVersion` | `""` |
+| `testCase.lifecycle.reinstall` | If true, install a new control plane for each test. Otherwise, use a single control plane throughout | `false` |
+| `testCase.lifecycle.uninstall` | If using a single control plane, uninstall once the tests complete (whether they pass or fail) | `false` |
+| `testCase.inject.skip` | Skip proxy injection tests | `false` |
+| `testCase.inject.clean` | Delete the resources created for testing proxy injection | `false` |
+| `testCase.ingress.skip` | If true, skips all ingress tests | `false` |
+| `testCase.ingress.config.controllers` | List of ingress controllers to test. Currently only supports `nginx` | []string |
 
 
 ## Usage
@@ -80,7 +81,7 @@ This section outlines the various methods that can be used to run the conformanc
 
 ### Using the Sonobuoy CLI
 
-[Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) offers a reliable way to run diagnostic tests in a Kuberenetes cluster. We leverage its [plugin model](https://sonobuoy.io/docs/master/plugins/) to run conformance tests inside a Kubernetes pod.
+[Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) offers a reliable way to run diagnostic tests in a Kubernetes cluster. We leverage its [plugin model](https://sonobuoy.io/docs/master/plugins/) to run conformance tests inside a Kubernetes pod.
 
 
 The below commands assume that the user has the [Sonobuoy CLI](https://github.com/vmware-tanzu/sonobuoy#installation) and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) (with a correctly configured `kubeconfig`) installed locally.
@@ -96,7 +97,7 @@ $ kubectl create ns sonobuoy && \
   --from-file=config.yaml=/path/to/config.yaml
 
 # Run the plugin
-$ plugin=https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/sonobuoy/plugin.yaml
+$ plugin=https://raw.githubusercontent.com/linkerd/linkerd2-conformance/master/sonobuoy/plugin.yaml
 
 $ sonobuoy run \
   --plugin $plugin \
@@ -106,7 +107,7 @@ $ sonobuoy run \
 # [Optional] Check the status of the pod
 $ sonobuoy status
 
-# Retrieve the test results results
+# Retrieve the test results
 # This command downloads the tar ball containing the results
 $ results=$(sonobuoy retrieve)
 
@@ -128,7 +129,7 @@ $ git clone https://github.com/linkerd/linkerd2-conformance
 # Navigate into project directory
 $ cd linkerd2-conformance
 
-# Use the convinence script to run `go run`
+# Use the convenient script to run `go run`
 # $ bin/go-test [TEST NAME] [Test ID]
 
 $ bin/go-test inject 01
