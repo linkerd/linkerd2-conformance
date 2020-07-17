@@ -19,7 +19,7 @@ const (
 	multiclusterHelmReleaseName = "multicluster-helm-release"
 
 	installEnv           = "LINKERD2_VERSION"
-	configFile           = "../../config.yaml"
+	configFile           = "config.yaml"
 	linkerdInstallScript = "install.sh"
 	installScriptURL     = "https://run.linkerd.io/install"
 
