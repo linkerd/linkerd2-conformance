@@ -1,13 +1,12 @@
-package lifecycle
+package conformance_test
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
+	"github.com/linkerd/linkerd2-conformance/specs"
 	"github.com/linkerd/linkerd2-conformance/utils"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
 func TestMain(m *testing.M) {
@@ -29,7 +28,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestLifecycle(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Lifecycle")
+func TestConformance(t *testing.T) {
+	specs.RunConformanceTests(t)
 }

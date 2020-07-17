@@ -61,7 +61,7 @@ func getExternalIP(svc, ns string) (string, error) {
 func testNginx() {
 	h, _ := utils.GetHelperAndConfig()
 	ginkgo.By("Creating ingress-nginx controller")
-	_, err := h.Kubectl("", "apply", "-f", "testdata/controllers/nginx.yaml")
+	_, err := h.Kubectl("", "apply", "-f", "testdata/ingress/controllers/nginx.yaml")
 
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create controller: %s", utils.Err(err)))
 
@@ -87,7 +87,7 @@ func testNginx() {
 	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
 
 	ginkgo.By("Applying ingress resource")
-	_, err = h.Kubectl("", "apply", "-f", "testdata/resources/nginx.yaml")
+	_, err = h.Kubectl("", "apply", "-f", "testdata/ingress/resources/nginx.yaml")
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to create ingress resource: %s", utils.Err(err)))
 
 	ginkgo.By("Checking if emojivoto is reachable")

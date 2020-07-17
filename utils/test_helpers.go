@@ -184,21 +184,16 @@ func TestControlPlanePostInstall(h *testutil.TestHelper) {
 	testResourcesPostInstall(h.GetLinkerdNamespace(), linkerdSvcs, testutil.LinkerdDeployReplicas, h)
 }
 
-func BeforeSuiteCallback() {
+func RunBeforeAndAfterEachSetup() {
 	h, c := GetHelperAndConfig()
-
-	// install new control plane for each test
 	if !c.SingleControlPlane() {
-		InstallLinkerdControlPlane(h, c)
-	}
-}
+		_ = ginkgo.BeforeEach(func() {
+			InstallLinkerdControlPlane(h, c)
+		})
 
-func AfterSuiteCallBack() {
-	h, c := GetHelperAndConfig()
-
-	// uninstall control plane after each test
-	if !c.SingleControlPlane() {
-		UninstallLinkerdControlPlane(h)
+		_ = ginkgo.AfterEach(func() {
+			UninstallLinkerdControlPlane(h)
+		})
 	}
 }
 

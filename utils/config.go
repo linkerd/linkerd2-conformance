@@ -207,7 +207,7 @@ func (options *ConformanceTestOptions) GetLinkerdPath() string {
 
 // SingleControlPlane determines if a singl CP must be used throughout
 func (options *ConformanceTestOptions) SingleControlPlane() bool {
-	return !options.Lifecycle.Reinstall
+	return !options.TestCase.Lifecycle.Reinstall
 }
 
 // HA determines if a high-availability control-plane must be used
@@ -217,17 +217,17 @@ func (options *ConformanceTestOptions) HA() bool {
 
 // SkipInstall determines if install tests must be skipped
 func (options *ConformanceTestOptions) SkipLifecycle() bool {
-	return !options.SingleControlPlane() && options.Lifecycle.Skip
+	return !options.SingleControlPlane() && options.TestCase.Lifecycle.Skip
 }
 
 // CleanInject determines if resources created during inject test must be removed
 func (options *ConformanceTestOptions) CleanInject() bool {
-	return options.Inject.Clean
+	return options.TestCase.Inject.Clean
 }
 
 // SkipInject determines if inject test must be skipped
 func (options *ConformanceTestOptions) SkipInject() bool {
-	return options.Inject.Skip
+	return options.TestCase.Inject.Skip
 }
 
 // GetAddons returns the add-on config
@@ -247,10 +247,10 @@ func (options *ConformanceTestOptions) GetInstallFlags() []string {
 
 // SkipIngress determines if ingress tests must be skipped
 func (options *ConformanceTestOptions) SkipIngress() bool {
-	return options.Ingress.Skip
+	return options.TestCase.Ingress.Skip
 }
 
 // ShouldTestIngressOfType checks if a given type of ingress must be tested
 func (options *ConformanceTestOptions) ShouldTestIngressOfType(t string) bool {
-	return indexOf(options.Ingress.IngressConfig.Controllers, t) > -1
+	return indexOf(options.TestCase.Ingress.IngressConfig.Controllers, t) > -1
 }
