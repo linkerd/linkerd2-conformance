@@ -20,9 +20,6 @@ RUN mv ./kubectl /usr/local/bin
 # Copy test binary
 COPY --from=build /conformance/conformance /conformance
 
-# Copy run script
-
 COPY ./sonobuoy/run.sh .
 COPY ./testdata /testdata
-CMD ["/bin/bash", "run.sh"]
 

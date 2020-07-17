@@ -3,10 +3,10 @@ podSpec:
   restartPolicy: Never
   serviceAccountName: sonobuoy-serviceaccount
   volumes:
-      - name: test-config
-        configMap:
-            name: l5d-config
-            optional: true
+    - name: test-config
+      configMap:
+        name: l5d-config
+        optional: true
   tolerations:
   - effect: NoSchedule
     key: node-role.kubernetes.io/master
@@ -22,7 +22,9 @@ sonobuoy-config:
   result-format: junit
 spec:
   command:
-  - ./run
+  - /bin/bash
+  args:
+      - ./run.sh
   image: mayankshah1607/linkerd2-conformance
   name: plugin
   resources: {}
