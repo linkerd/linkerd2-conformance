@@ -94,7 +94,10 @@ func testNginx() {
 	ip, err := getExternalIP(utils.NginxController, utils.NginxNs)
 	gomega.Expect(err).Should(gomega.BeNil(), utils.Err(err))
 
-	err = pingEmojivoto(strings.Trim(ip, "'"))
+	err = h.RetryFor(3*time.Minute, func() error {
+		return pingEmojivoto(strings.Trim(ip, "'"))
+	})
+
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to reach emojivoto: %s", utils.Err(err)))
 
 	ginkgo.By(fmt.Sprintf("Removing ingress controller in namespace %s", utils.NginxNs))
