@@ -22,14 +22,14 @@ sonobuoy-config:
   result-format: junit
 spec:
   command:
-      - ./sonobuoy/run
+  - ./run
   image: mayankshah1607/linkerd2-conformance
   name: plugin
   resources: {}
   volumeMounts:
   - mountPath: /tmp/results
     name: results
-  - mountPath: /linkerd2-conformance/config.yaml
+  - mountPath: /config.yaml
     subPath: config.yaml
     name: test-config
     readOnly: true
