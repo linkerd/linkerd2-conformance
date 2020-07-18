@@ -29,9 +29,9 @@ If you are interested in helping to extend the test suites, see [Adding new test
   - [Running the tests using Docker]()
   - [Running the tests locally](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally)
 - [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
-  - [Initial bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-initial-bootstrapping)
-  - [Adding tests](https://github.com/mayankshah1607/linkerd2-conformance#2-adding-tests)
-  - [Wiring up newly added tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-newly-added-test)
+  - [Bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-bootstrapping)
+  - [Adding tests](https://github.com/mayankshah1607/linkerd2-conformance#2-writing-the-tests)
+  - [Wiring up the newly added tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-the-newly-added-test)
 
 ## Repository Structure
 
