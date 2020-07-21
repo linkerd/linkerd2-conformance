@@ -32,33 +32,33 @@ below.
 
 ## Table of Contents
 
-- [Repository Structure](https://github.com/mayankshah1607/linkerd2-conformance#repository-structure)
-- [Configuring your tests](https://github.com/mayankshah1607/linkerd2-conformance#configuring-your-tests)
-  - [Configuration Options](https://github.com/mayankshah1607/linkerd2-conformance#configuration-options)
-- [Usage](https://github.com/mayankshah1607/linkerd2-conformance#usage)
-  - [Using the Sonobuoy CLI](https://github.com/mayankshah1607/linkerd2-conformance#using-the-sonobuoy-cli)
+- [Repository Structure](https://github.com/linkerd/linkerd2-conformance#repository-structure)
+- [Configuring your tests](https://github.com/linkerd/linkerd2-conformance#configuring-your-tests)
+  - [Configuration Options](https://github.com/linkerd/linkerd2-conformance#configuration-options)
+- [Usage](https://github.com/linkerd/linkerd2-conformance#usage)
+  - [Using the Sonobuoy CLI](https://github.com/linkerd/linkerd2-conformance#using-the-sonobuoy-cli)
   - Running the tests using Docker
-  - [Running the tests locally](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally)
-- [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
-  - [Bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-bootstrapping)
-  - [Adding tests](https://github.com/mayankshah1607/linkerd2-conformance#2-writing-the-tests)
-  - [Wiring up the newly added tests](https://github.com/mayankshah1607/linkerd2-conformance#3-wiring-up-the-newly-added-test)
+  - [Running the tests locally](https://github.com/linkerd/linkerd2-conformance#running-the-tests-locally)
+- [Adding new tests](https://github.com/linkerd/linkerd2-conformance#adding-new-tests)
+  - [Bootstrapping](https://github.com/linkerd/linkerd2-conformance#1-bootstrapping)
+  - [Adding tests](https://github.com/linkerd/linkerd2-conformance#2-writing-the-tests)
+  - [Wiring up the newly added tests](https://github.com/linkerd/linkerd2-conformance#3-wiring-up-the-newly-added-test)
 
 ## Repository Structure
 
-- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs)
+- [`specs`](https://github.com/linkerd/linkerd2-conformance/tree/master/specs)
 contains the tests for each of the features organized into separate
 packages
-- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy)
+- [`sonobuoy`](https://github.com/linkerd/linkerd2-conformance/tree/master/sonobuoy)
 contains the items required to be able to run the tests as a
 [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
-- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils)
+- [`utils`](https://github.com/linkerd/linkerd2-conformance/tree/master/utils)
 contains helper functions that can be used while
 writing conformance tests
-- [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin)
+- [`bin`](https://github.com/linkerd/linkerd2-conformance/blob/master/bin)
 contains useful helper scripts to build/push the
 Docker image and running the tests
-- [`testdata`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin)
+- [`testdata`](https://github.com/linkerd/linkerd2-conformance/blob/master/bin)
 contains the necessary files required by the tests,
 organized into subfolders
 
@@ -77,7 +77,7 @@ shall read this YAML file during runtime and run
 accordingly.
 
 ```bash
-CONFIG=https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml
+CONFIG=https://raw.githubusercontent.com/linkerd/linkerd2-conformance/master/config.yaml
 
 curl -sL $CONFIG > config.yaml
 ```
