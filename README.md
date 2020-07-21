@@ -1,8 +1,19 @@
+# Linkerd Conformance Validation
+
 ![Linkerd][logo]
 
-This repo contains the conformance tests for [Linkerd2](https://github.com/linkerd/linkerd2) as described by [this](https://github.com/linkerd/rfc/pull/24) RFC.
+This repo contains the conformance tests for  [Linkerd2](https://github.com/linkerd/linkerd2)
+as described by [this](https://github.com/linkerd/rfc/pull/24) RFC.
 
-The conformance validation tool is primarily intended to be run on a specified version of Linkerd to verify the correctness of a [Kubernetes](https://kubernetes.io/) cluster's configuration with respect to Linkerd as well as validate non-trivial network communication (HTTP, gRPC, websocket) among stateless and stateful workloads in the Linkerd data plane.
+The conformance validation tool is
+primarily intended to be run on a
+specified version of Linkerd to verify
+the correctness of a [Kubernetes](https://kubernetes.io/)
+cluster's configuration with respect
+to Linkerd as well as validate non-trivial
+network communication (HTTP, gRPC, websocket)
+among stateless and stateful workloads
+in the Linkerd data plane.
 
 The conformance tests exercise the following features:
 
@@ -13,11 +24,11 @@ The conformance tests exercise the following features:
 - [ ] Retries and timeouts
 - [ ] Data plane health checks
 - [ ] Ingress configuration
-
 _...and much more_
 
-If you are interested in helping to extend the test suites, see [Adding new tests](https://github.com/linkerd/linkerd2-conformance#2-adding-tests) below.
-
+If you are interested in helping to extend the test suites, see
+[Adding new tests](https://github.com/linkerd/linkerd2-conformance#2-adding-tests)
+below.
 
 ## Table of Contents
 
@@ -26,7 +37,7 @@ If you are interested in helping to extend the test suites, see [Adding new test
   - [Configuration Options](https://github.com/mayankshah1607/linkerd2-conformance#configuration-options)
 - [Usage](https://github.com/mayankshah1607/linkerd2-conformance#usage)
   - [Using the Sonobuoy CLI](https://github.com/mayankshah1607/linkerd2-conformance#using-the-sonobuoy-cli)
-  - [Running the tests using Docker]()
+  - Running the tests using Docker
   - [Running the tests locally](https://github.com/mayankshah1607/linkerd2-conformance#running-the-tests-locally)
 - [Adding new tests](https://github.com/mayankshah1607/linkerd2-conformance#adding-new-tests)
   - [Bootstrapping](https://github.com/mayankshah1607/linkerd2-conformance#1-bootstrapping)
@@ -35,30 +46,55 @@ If you are interested in helping to extend the test suites, see [Adding new test
 
 ## Repository Structure
 
-- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs) contains the tests for each of the features organized into separate packages
-- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy) contains the items required to be able to run the tests as a [Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
-- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils) contains helper functions that can be used while writing conformance tests
-- [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin) contains useful helper scripts to build/push the Docker image and running the tests
-- [`testdata`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin) contains the necessary files required by the tests, organized into subfolders
+- [`specs`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/specs)
+contains the tests for each of the features organized into separate
+packages
+- [`sonobuoy`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/sonobuoy)
+contains the items required to be able to run the tests as a
+[Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) plugin
+- [`utils`](https://github.com/mayankshah1607/linkerd2-conformance/tree/master/utils)
+contains helper functions that can be used while
+writing conformance tests
+- [`bin`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin)
+contains useful helper scripts to build/push the
+Docker image and running the tests
+- [`testdata`](https://github.com/mayankshah1607/linkerd2-conformance/blob/master/bin)
+contains the necessary files required by the tests,
+organized into subfolders
 
 ## Configuring your tests
 
-The conformance tests can be easily configured by specifying a `config.yaml` that holds the configuration values. This includes things like Linkerd version, Linkerd add-ons, test specific configuration, binary path, etc.  
+The conformance tests can be easily configured
+by specifying a `config.yaml` that holds the
+configuration values. This includes things like
+Linkerd version, Linkerd add-ons, test specific
+configuration, binary path, etc.  
 
-Run the command below to pull up a sample configuration file, `config.yaml`, and modify it according to your requirements. The tests shall read this YAML file during runtime and run accordingly.
+Run the command below to pull up a sample
+configuration file, `config.yaml`, and modify
+it according to your requirements. The tests
+shall read this YAML file during runtime and run
+accordingly.
 
 ```bash
-$ curl -sL https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml > config.yaml
+CONFIG=https://raw.githubusercontent.com/mayankshah1607/linkerd2-conformance/master/config.yaml
+
+curl -sL $CONFIG > config.yaml
 ```
 
 ### Configuration options
 
-This section describes the various configuration options and its default values. Not providing a configuration file, or providing a partial configuration file will result in the tests running on default settings as described below
+This section describes the various configuration
+options and its default values. Not providing a
+configuration file, or providing a partial
+configuration file will result in the tests running
+on default settings as described below
 
 | Option | Description | Default value |
 |-|-|-|
 | `linkerdVersion` | The linkerd2 binary version to use | Latest stable release |
-| `linkerdBinaryPath` | If specified, the tests use the binary installed in the directory. It is recommended that this is left unspecified while using Sonobuoy or if upgrade tests are enabled | `$HOME/.linkerd2/bin/linkerd` | 
+| `linkerdBinaryPath` | If specified, the tests use the binary installed in the directory. It is recommended that this is left
+unspecified while using Sonobuoy or if upgrade tests are enabled | `$HOME/.linkerd2/bin/linkerd` |
 | `clusterDomain` | Use the specified cluster domain | `"cluster.local"` |
 | `K8sContext` | Use the specified K8s context. Its is recommended that while running the tests with Sonobuoy (`sonobuoy run`), use the `--context` flag | `""` |
 | `controlPlane.namespace` | Installs the control plane in the specified namespace | `"l5d-conformance"` |
@@ -74,19 +110,27 @@ This section describes the various configuration options and its default values.
 | `testCase.ingress.skip` | If true, skips all ingress tests | `false` |
 | `testCase.ingress.config.controllers` | List of ingress controllers to test. Currently only supports `nginx` | []string |
 
-
 ## Usage
 
-This section outlines the various methods that can be used to run the conformance tests against your [Kubernetes](https://kubernetes.io/) cluster
+This section outlines the various methods that can
+be used to run the conformance tests against your
+[Kubernetes](https://kubernetes.io/) cluster
 
 ### Using the Sonobuoy CLI
 
-[Sonobuoy](https://github.com/vmware-tanzu/sonobuoy) offers a reliable way to run diagnostic tests in a Kubernetes cluster. We leverage its [plugin model](https://sonobuoy.io/docs/master/plugins/) to run conformance tests inside a Kubernetes pod.
+[Sonobuoy](https://github.com/vmware-tanzu/sonobuoy)
+offers a reliable way to run diagnostic tests in a
+Kubernetes cluster. We leverage its [plugin model](https://sonobuoy.io/docs/master/plugins/)
+to run conformance tests inside a Kubernetes pod.
 
+The below commands assume that the user has the
+[Sonobuoy CLI](https://github.com/vmware-tanzu/sonobuoy#installation)
+and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
+(with a correctly configured `kubeconfig`) installed locally.
 
-The below commands assume that the user has the [Sonobuoy CLI](https://github.com/vmware-tanzu/sonobuoy#installation) and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) (with a correctly configured `kubeconfig`) installed locally.
-
-This repo provides a Sonobuoy plugin file that is intended to be plugged into the Sonobuoy CLI. Sonobuoy reads the plugin definition, and spins up a pod with the [linkerd2-conformance Docker image]().
+This repo provides a Sonobuoy plugin file that is intended to be
+plugged into the Sonobuoy CLI. Sonobuoy reads the plugin definition,
+and spins up a pod with the [linkerd2-conformance Docker image](#).
 
 ```bash
 # Create a ConfigMap from the `config.yaml` mentioned in the previous section
@@ -120,7 +164,11 @@ $ sonobuoy delete --wait
 
 ### Running the tests locally
 
-These commands assume a working [Go 1.14](https://golang.org/doc/go1.14) environment along with the [Linkerd2 CLI](https://linkerd.io/2/getting-started/#step-1-install-the-cli) and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) (with a correctly configured `kubeconfig`) installed.
+These commands assume a working [Go 1.14](https://golang.org/doc/go1.14)
+environment along with the
+[Linkerd2 CLI](https://linkerd.io/2/getting-started/#step-1-install-the-cli)
+and [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
+(with a correctly configured `kubeconfig`) installed.
 
 ```bash
 # clone this repository
@@ -139,33 +187,54 @@ $ go test -timeout 1h -ginkgo.v -ginkgo.reportFile=path/to/report.xml
 
 ## Adding new tests
 
-This project makes use of [Ginkgo](https://github.com/onsi/ginkgo) paired with [Gomega](https://github.com/onsi/gomega) matcher library to describe tests and write assertions. Each of the tests can be found under the `tests/` folder, in its respective packages.
+This project makes use of [Ginkgo](https://github.com/onsi/ginkgo)
+paired with [Gomega](https://github.com/onsi/gomega) matcher
+library to describe tests and write assertions. Each of the
+tests can be found under the `tests/` folder, in its respective packages.
 
-Rather than having a separate test suite for each feature (and its associated `_test.go` files), this project provides a single test suite that runs tests for each of the features as an organized collection of [specs](https://onsi.github.io/ginkgo/#adding-specs-to-a-suite). This was done to not only have greater control over the order in which the tests are run, but also to have a smooth and consistent contribution experience.
+Rather than having a separate test suite for each feature
+(and its associated `_test.go` files), this project provides
+a single test suite that runs tests for each of the features
+as an organized collection of
+[specs](https://onsi.github.io/ginkgo/#adding-specs-to-a-suite).
+This was done to not only have greater control over the order in
+which the tests are run, but also to have a smooth
+and consistent contribution experience.
 
-For the sake of understanding, we shall assume a feature called `l5dFeature`, for which we shall add a new test as shown below.
+For the sake of understanding, we shall assume a feature
+called `l5dFeature`, for which we shall add a new test
+as shown below.
 
 #### 1. Bootstrapping
-   
-To add a new test for `l5Feature`, we first add a new package `l5dFeature` under the `specs` folder.
+
+To add a new test for `l5Feature`, we first add a new
+package `l5dFeature` under the `specs` folder.
 
 ```bash
-$ mkdir specs/l5dFeature
+mkdir specs/l5dFeature
 ```
 
 Our new package shall mainly require 2 new files
 
-- `spec.go` - this file holds the description and structure of the test in the form of [`Describe`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [`It`](https://onsi.github.io/ginkgo/#individual-specs-it), [`Context`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context), [etc.](https://onsi.github.io/ginkgo/#structuring-your-specs) blocks.
-- `tests.go` - this file shall contain assertions and testing logic for each of our specs as described in `specs.go`
+- `spec.go` - this file holds the description and structure
+of the test in the form of
+[`Describe`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context),
+[`It`](https://onsi.github.io/ginkgo/#individual-specs-it),
+[`Context`](https://onsi.github.io/ginkgo/#organizing-specs-with-containers-describe-and-context),
+[etc.](https://onsi.github.io/ginkgo/#structuring-your-specs) blocks.
+- `tests.go` - this file shall contain assertions and testing logic
+for each of our specs as described in `specs.go`
 
 ```bash
-$ touch specs/l5dFeature/tests.go
-$ touch specs/l5dFeature/spec.go
+touch specs/l5dFeature/tests.go
+touch specs/l5dFeature/spec.go
 ```
 
 #### 2. Writing the tests
-   
-`spec.go` must contain a single (if required, more) exported function that returns a `ginkgo.Describe` block that holds the specs. This function must be named `Runl5dFeatureTests`. 
+
+`spec.go` must contain a single (if required, more) exported
+function that returns a `ginkgo.Describe` block that holds
+the specs. This function must be named `Runl5dFeatureTests`. 
 
 For example
 
@@ -190,7 +259,9 @@ func Runl5dFeatureTests() bool {
   })
 }
 ```
-`tests.go` must contain the functions that do the actual testing and assertions, which are used as callbacks as shown above.
+
+`tests.go` must contain the functions that do the actual testing
+and assertions, which are used as callbacks as shown above.
 
 For example
 
@@ -216,7 +287,12 @@ func testSomethingCool() {
 
 #### 3. Wiring up the newly added test
 
-Once the tests have been added, the newly written `Runl5dFeatureTests` must be brought to scope under the `specs` package. To do so, simply import the `l5dFeature` package under `specs/specs.go`, and call `Runl5dFeatureTests` in the function body of `runPrimaryTests` (or `runLifecycleTests` depending on what is being tested).
+Once the tests have been added, the newly written
+`Runl5dFeatureTests` must be brought to scope under
+the `specs` package. To do so, simply import the `l5dFeature`
+package under `specs/specs.go`, and call `Runl5dFeatureTests`
+in the function body of `runPrimaryTests` (or `runLifecycleTests`
+depending on what is being tested).
 
 For example
 
