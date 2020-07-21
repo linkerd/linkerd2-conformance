@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if [ $# -ne 1 ]; then
+    echo "Usage: bin/${0##*/}" >&2
+    exit 1
+fi
+
+cmd="docker build"
+$cmd -t "$1"/linkerd2-conformance .
+
