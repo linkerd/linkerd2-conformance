@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if [ $# -ne 1 ]; then
+    echo "Usage: bin/${0##*/} [Username]" >&2
+    exit 1
+fi
+
+cmd="docker push"
+$cmd "$1"/linkerd2-conformance

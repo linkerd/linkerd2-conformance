@@ -1,0 +1,37 @@
+podSpec:
+  containers: []
+  restartPolicy: Never
+  serviceAccountName: sonobuoy-serviceaccount
+  volumes:
+    - name: test-config
+      configMap:
+        name: l5d-config
+        optional: true
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - key: kubernetes.io/e2e-evict-taint-key
+    operator: Exists
+      
+sonobuoy-config:
+  driver: Job
+  plugin-name: linkerd2-conformance
+  result-format: junit
+spec:
+  command:
+  - /bin/bash
+  args:
+      - ./run.sh
+  image: mayankshah1607/linkerd2-conformance
+  name: plugin
+  resources: {}
+  volumeMounts:
+  - mountPath: /tmp/results
+    name: results
+  - mountPath: /config.yaml
+    subPath: config.yaml
+    name: test-config
+    readOnly: true
