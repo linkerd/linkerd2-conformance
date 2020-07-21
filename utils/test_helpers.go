@@ -22,6 +22,8 @@ var (
 	}
 )
 
+// CheckOutput is used for unmarshalling the
+// output from `linkerd check -o json`
 type CheckOutput struct {
 	Success    bool `json:"success"`
 	Categories []struct {
@@ -73,6 +75,7 @@ func RunCheck(h *testutil.TestHelper, pre bool) {
 	gomega.Expect(checkResult.Success).Should(gomega.BeTrue(), fmt.Sprintf("`linkerd check failed: %s`\n Check errors: %s", Err(err), getFailedChecks(checkResult)))
 }
 
+// InstallLinkerdControlPlane runs the control plane install tests
 func InstallLinkerdControlPlane(h *testutil.TestHelper, c *ConformanceTestOptions) {
 	withHA := c.HA()
 
@@ -133,6 +136,8 @@ func InstallLinkerdControlPlane(h *testutil.TestHelper, c *ConformanceTestOption
 	RunCheck(h, false) // run post checks
 }
 
+// UninstallLinkerdControlPlane runs the test for
+// control plane uninstall
 func UninstallLinkerdControlPlane(h *testutil.TestHelper) {
 	ginkgo.By("Uninstalling linkerd control plane")
 	cmd := "install"
@@ -184,6 +189,8 @@ func TestControlPlanePostInstall(h *testutil.TestHelper) {
 	testResourcesPostInstall(h.GetLinkerdNamespace(), linkerdSvcs, testutil.LinkerdDeployReplicas, h)
 }
 
+// RunBeforeAndAfterEachSetup runs the control plane installation
+// and uninstallation tests when a new control plane is required by each test
 func RunBeforeAndAfterEachSetup() {
 	h, c := GetHelperAndConfig()
 	if !c.SingleControlPlane() {
@@ -219,7 +226,7 @@ func checkSampleAppState() {
 	gomega.Expect(err).Should(gomega.BeNil(), fmt.Sprintf("failed to exercise emojivoto endpoint: %s", Err(err)))
 }
 
-//  TestEmojivotoApp installs and checks if emojivoto app is installed
+// TestEmojivotoApp installs and checks if emojivoto app is installed
 // called of the function must have `testdata/emojivoto.yml`
 func TestEmojivotoApp() {
 	ginkgo.By("Installing emojivoto")

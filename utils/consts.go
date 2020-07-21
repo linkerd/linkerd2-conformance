@@ -24,13 +24,19 @@ const (
 	installScriptURL     = "https://run.linkerd.io/install"
 
 	// string literals for identifying the ingress controllers
-	Nginx      = "nginx"
-	Traefik    = "traefik"
-	GCE        = "gce"
-	Ambassador = "ambassador"
-	Gloo       = "gloo"
-	Contour    = "contour"
 
-	NginxNs         = "ingress-nginx"
+	// Nginx holds the string literal "nginx"
+	Nginx = "nginx"
+
+	// Traefik    = "traefik"
+	// GCE        = "gce"
+	// Ambassador = "ambassador"
+	// Gloo       = "gloo"
+	// Contour    = "contour"
+
+	// NginxNs is the namespace in which the nginx controller is installed
+	NginxNs = "ingress-nginx"
+
+	// NginxController is the name of the nginx controller
 	NginxController = "ingress-nginx-controller"
 )

@@ -19,6 +19,7 @@ type Inject struct {
 	Clean bool `yaml:"clean,omitempty"` // deletes all resources created while testing
 }
 
+// Lifecycle holds lifecycle test configuration
 type Lifecycle struct {
 	Skip               bool   `yaml:"skip,omitempty"`
 	UpgradeFromVersion string `yaml:"upgradeFromVersion,omitempty"`
@@ -26,26 +27,31 @@ type Lifecycle struct {
 	Uninstall          bool   `yaml:"uninstall,omitempty"`
 }
 
+// ControlPlaneConfig holds the configuration for control plane installation
 type ControlPlaneConfig struct {
 	HA     bool                   `yaml:"ha,omitempty"`
 	Flags  []string               `yaml:"flags,omitempty"`
 	AddOns map[string]interface{} `yaml:"addOns,omitempty"`
 }
 
+// ControlPlane wraps Namespace and ControlPlaneConfig
 type ControlPlane struct {
 	Namespace          string `yaml:"namespace,omitempty"`
 	ControlPlaneConfig `yaml:"config,omitempty"`
 }
 
+// IngressConfig holds the list of ingress controllers
 type IngressConfig struct {
 	Controllers []string `yaml:"controllers"`
 }
 
+// Ingress holds the configuration for ingress test
 type Ingress struct {
 	Skip          bool `yaml:"skip,omitempty"`
 	IngressConfig `yaml:"config,omitempty"`
 }
 
+// TestCase holds configuration of the various test cases
 type TestCase struct {
 	Lifecycle `yaml:"lifecycle,omitempty"`
 	Inject    `yaml:"inject"`
@@ -115,7 +121,7 @@ func (options *ConformanceTestOptions) parse() error {
 		var err error
 
 		if version, err = getLatestStableVersion(); err != nil {
-			return fmt.Errorf("error fetching latest version: %s\n", err)
+			return fmt.Errorf("error fetching latest version: %s", err)
 		}
 
 		fmt.Printf("Unspecified linkerd2 version - using default value \"%s\"\n", version)
@@ -215,7 +221,7 @@ func (options *ConformanceTestOptions) HA() bool {
 	return options.ControlPlane.ControlPlaneConfig.HA
 }
 
-// SkipInstall determines if install tests must be skipped
+// SkipLifecycle determines if install tests must be skipped
 func (options *ConformanceTestOptions) SkipLifecycle() bool {
 	return !options.SingleControlPlane() && options.TestCase.Lifecycle.Skip
 }
