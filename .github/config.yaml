@@ -9,17 +9,6 @@ controlPlane:
             - "debug"
             - "--proxy-log-level"
             - "warn,linkerd2_proxy=debug"
-      # addOns:
-      #     tracing:
-      #         enabled: true
-      #         collector:
-      #             resources:
-      #                 cpu:
-      #                     limit: 100m
-      #                     request: 10m
-      #                 memory:
-      #                     limit: 100Mi
-      #                     request: 50Mi
 testCase:
     lifecycle:
         skip: false
@@ -30,7 +19,7 @@ testCase:
         skip: false
         clean: true
     ingress:
-        skip: false
+        skip: true
         config:
             controllers:
                 - nginx
