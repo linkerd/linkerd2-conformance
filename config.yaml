@@ -36,4 +36,9 @@ testCase:
         skip: false
         config:
             controllers:
-                - nginx
+                - name: nginx
+                  clean: true
+                - name: ambassador
+                  clean: true
+                - name: traefik
+                  clean: true
