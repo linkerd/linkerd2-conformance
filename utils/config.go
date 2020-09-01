@@ -74,6 +74,12 @@ type Stat struct {
 	Clean bool `yaml:"clean,omitempty"`
 }
 
+// Routes holds the configuration for `routes` tests
+type Routes struct {
+	Skip  bool `yaml:"skip,omitempty"`
+	Clean bool `yaml:"clean,omitempty"`
+}
+
 // TestCase holds configuration of the various test cases
 type TestCase struct {
 	Lifecycle `yaml:"lifecycle,omitempty"`
@@ -82,6 +88,7 @@ type TestCase struct {
 	Tap       `yaml:"tap"`
 	Edges     `yaml:"edges"`
 	Stat      `yaml:"stat"`
+	Routes    `yaml:"routes"`
 }
 
 // ConformanceTestOptions holds the values fed from the test config file
@@ -326,6 +333,16 @@ func (options *ConformanceTestOptions) ShouldCleanIngressInstallation(t string) 
 		}
 	}
 	return false
+}
+
+// SkipRoutes checks if tap tests should be skipped
+func (options *ConformanceTestOptions) SkipRoutes() bool {
+	return options.TestCase.Routes.Skip
+}
+
+// CleanRoutes checks if tap resources must be deleted
+func (options *ConformanceTestOptions) CleanRoutes() bool {
+	return options.TestCase.Routes.Clean
 }
 
 // SkipTap checks if tap tests should be skipped

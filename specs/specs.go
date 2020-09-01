@@ -7,6 +7,7 @@ import (
 	"github.com/linkerd/linkerd2-conformance/specs/ingress"
 	"github.com/linkerd/linkerd2-conformance/specs/inject"
 	"github.com/linkerd/linkerd2-conformance/specs/lifecycle"
+	"github.com/linkerd/linkerd2-conformance/specs/routes"
 	"github.com/linkerd/linkerd2-conformance/specs/stat"
 	"github.com/linkerd/linkerd2-conformance/specs/tap"
 	"github.com/linkerd/linkerd2-conformance/utils"
@@ -47,6 +48,7 @@ func runPrimaryTests() bool {
 		_ = ingress.RunIngressTests()
 		_ = edges.RunEdgesTests()
 		_ = stat.RunStatTests()
+		_ = routes.RunRoutesTests()
 
 		// a separate check for running uninstall must always occur at the end
 		if c.SingleControlPlane() && h.Uninstall() {
