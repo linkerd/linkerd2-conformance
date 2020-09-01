@@ -3,6 +3,7 @@ package specs
 import (
 	"testing"
 
+	"github.com/linkerd/linkerd2-conformance/specs/edges"
 	"github.com/linkerd/linkerd2-conformance/specs/ingress"
 	"github.com/linkerd/linkerd2-conformance/specs/inject"
 	"github.com/linkerd/linkerd2-conformance/specs/lifecycle"
@@ -44,6 +45,7 @@ func runPrimaryTests() bool {
 		_ = inject.RunInjectTests()
 		_ = tap.RunTapTests()
 		_ = ingress.RunIngressTests()
+		_ = edges.RunEdgesTests()
 		_ = stat.RunStatTests()
 
 		// a separate check for running uninstall must always occur at the end
